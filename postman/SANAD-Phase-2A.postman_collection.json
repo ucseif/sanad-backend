@@ -1,0 +1,186 @@
+{
+    "info":  {
+                 "description":  "Local-only stateless preparation. No OTP, user creation, sessions or tokens. See docs/authentication-phase-2a.md.",
+                 "name":  "SANAD Phase 2A - Local preparation only",
+                 "schema":  "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+             },
+    "auth":  {
+                 "type":  "noauth"
+             },
+    "variable":  [
+                     {
+                         "key":  "base_url",
+                         "value":  "http://127.0.0.1:8000"
+                     },
+                     {
+                         "key":  "email",
+                         "value":  "amina@example.com"
+                     },
+                     {
+                         "key":  "username",
+                         "value":  "Amina_1"
+                     },
+                     {
+                         "key":  "login_password",
+                         "value":  ""
+                     }
+                 ],
+    "item":  [
+                 {
+                     "request":  {
+                                     "method":  "GET",
+                                     "header":  [
+                                                    {
+                                                        "key":  "Accept",
+                                                        "value":  "application/json"
+                                                    },
+                                                    {
+                                                        "key":  "Content-Type",
+                                                        "value":  "application/json"
+                                                    }
+                                                ],
+                                     "url":  "{{base_url}}/api/health"
+                                 },
+                     "name":  "Health",
+                     "response":  [
+
+                                  ]
+                 },
+                 {
+                     "request":  {
+                                     "method":  "POST",
+                                     "header":  [
+                                                    {
+                                                        "key":  "Accept",
+                                                        "value":  "application/json"
+                                                    },
+                                                    {
+                                                        "key":  "Content-Type",
+                                                        "value":  "application/json"
+                                                    }
+                                                ],
+                                     "url":  "{{base_url}}/api/auth/availability/email",
+                                     "body":  {
+                                                  "raw":  "{\r\n    \"email\":  \"{{email}}\"\r\n}",
+                                                  "options":  {
+                                                                  "raw":  {
+                                                                              "language":  "json"
+                                                                          }
+                                                              },
+                                                  "mode":  "raw"
+                                              }
+                                 },
+                     "name":  "Email availability",
+                     "response":  [
+
+                                  ]
+                 },
+                 {
+                     "request":  {
+                                     "method":  "POST",
+                                     "header":  [
+                                                    {
+                                                        "key":  "Accept",
+                                                        "value":  "application/json"
+                                                    },
+                                                    {
+                                                        "key":  "Content-Type",
+                                                        "value":  "application/json"
+                                                    }
+                                                ],
+                                     "url":  "{{base_url}}/api/auth/availability/username",
+                                     "body":  {
+                                                  "raw":  "{\r\n    \"username\":  \"{{username}}\"\r\n}",
+                                                  "options":  {
+                                                                  "raw":  {
+                                                                              "language":  "json"
+                                                                          }
+                                                              },
+                                                  "mode":  "raw"
+                                              }
+                                 },
+                     "name":  "Username availability",
+                     "response":  [
+
+                                  ]
+                 },
+                 {
+                     "request":  {
+                                     "method":  "POST",
+                                     "header":  [
+                                                    {
+                                                        "key":  "Accept",
+                                                        "value":  "application/json"
+                                                    },
+                                                    {
+                                                        "key":  "Content-Type",
+                                                        "value":  "application/json"
+                                                    }
+                                                ],
+                                     "url":  "{{base_url}}/api/auth/login",
+                                     "body":  {
+                                                  "raw":  "{\r\n    \"password\":  \"{{login_password}}\",\r\n    \"email\":  \"{{email}}\"\r\n}",
+                                                  "options":  {
+                                                                  "raw":  {
+                                                                              "language":  "json"
+                                                                          }
+                                                              },
+                                                  "mode":  "raw"
+                                              }
+                                 },
+                     "name":  "Login preparation (no OTP started)",
+                     "response":  [
+
+                                  ]
+                 },
+                 {
+                     "request":  {
+                                     "method":  "POST",
+                                     "header":  [
+                                                    {
+                                                        "key":  "Accept",
+                                                        "value":  "application/json"
+                                                    },
+                                                    {
+                                                        "key":  "Content-Type",
+                                                        "value":  "application/json"
+                                                    }
+                                                ],
+                                     "url":  "{{base_url}}/api/auth/register/prepare",
+                                     "body":  {
+                                                  "raw":  "{\r\n    \"country\":  \"Egypt\",\r\n    \"password_confirmation\":  \"ExamplePass1!\",\r\n    \"region\":  \"Cairo\",\r\n    \"username\":  \"{{username}}\",\r\n    \"password\":  \"ExamplePass1!\",\r\n    \"role\":  \"patient\",\r\n    \"first_name\":  \"Amina\",\r\n    \"address\":  \"12 Nile Street\",\r\n    \"phone_number\":  \"+201012345678\",\r\n    \"last_name\":  \"Hassan\",\r\n    \"email\":  \"{{email}}\"\r\n}",
+                                                  "options":  {
+                                                                  "raw":  {
+                                                                              "language":  "json"
+                                                                          }
+                                                              },
+                                                  "mode":  "raw"
+                                              }
+                                 },
+                     "name":  "Registration preparation (no account created)",
+                     "response":  [
+
+                                  ]
+                 },
+                 {
+                     "request":  {
+                                     "method":  "GET",
+                                     "header":  [
+                                                    {
+                                                        "key":  "Accept",
+                                                        "value":  "application/json"
+                                                    },
+                                                    {
+                                                        "key":  "Content-Type",
+                                                        "value":  "application/json"
+                                                    }
+                                                ],
+                                     "url":  "{{base_url}}/api/user"
+                                 },
+                     "name":  "Protected user (expects 401 without verified authentication)",
+                     "response":  [
+
+                                  ]
+                 }
+             ]
+}

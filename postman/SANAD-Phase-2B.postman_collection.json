@@ -1,0 +1,498 @@
+{
+    "info":  {
+                 "description":  "Server-owned OTP. Select a private local environment; secrets remain blank in this artifact. Do not run blindly: send makes real WhatsApp requests once configured. No mock flag exists.",
+                 "name":  "SANAD Phase 2B - Local secure WhatsApp authentication",
+                 "schema":  "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+             },
+    "auth":  {
+                 "type":  "noauth"
+             },
+    "event":  [
+                  {
+                      "script":  {
+                                     "exec":  [
+                                                  "const base = pm.variables.get(\"base_url\") || \"\";",
+                                                  "if (!/^https?:\\/\\/(127\\.0\\.0\\.1|localhost|\\[::1\\])(:\\d+)?$/.test(base)) { throw new Error(\"SANAD collection is restricted to local loopback hosts.\"); }"
+                                              ],
+                                     "type":  "text/javascript"
+                                 },
+                      "listen":  "prerequest"
+                  }
+              ],
+    "variable":  [
+                     {
+                         "key":  "base_url",
+                         "value":  "http://127.0.0.1:8000"
+                     },
+                     {
+                         "key":  "email",
+                         "value":  "amina@example.com"
+                     },
+                     {
+                         "key":  "username",
+                         "value":  "Amina_1"
+                     },
+                     {
+                         "key":  "password",
+                         "value":  ""
+                     },
+                     {
+                         "key":  "role",
+                         "value":  "patient"
+                     },
+                     {
+                         "key":  "phone_number",
+                         "value":  ""
+                     },
+                     {
+                         "key":  "attempt_id",
+                         "value":  ""
+                     },
+                     {
+                         "key":  "attempt_token",
+                         "value":  ""
+                     },
+                     {
+                         "key":  "purpose",
+                         "value":  "signup"
+                     },
+                     {
+                         "key":  "otp_code",
+                         "value":  ""
+                     },
+                     {
+                         "key":  "verification_proof",
+                         "value":  ""
+                     },
+                     {
+                         "key":  "auth_token",
+                         "value":  ""
+                     }
+                 ],
+    "item":  [
+                 {
+                     "name":  "Health",
+                     "request":  {
+                                     "method":  "GET",
+                                     "header":  [
+                                                    {
+                                                        "key":  "Accept",
+                                                        "value":  "application/json"
+                                                    },
+                                                    {
+                                                        "key":  "Content-Type",
+                                                        "value":  "application/json"
+                                                    }
+                                                ],
+                                     "url":  "{{base_url}}/api/health"
+                                 },
+                     "response":  [
+
+                                  ]
+                 },
+                 {
+                     "name":  "Email availability",
+                     "request":  {
+                                     "method":  "POST",
+                                     "header":  [
+                                                    {
+                                                        "key":  "Accept",
+                                                        "value":  "application/json"
+                                                    },
+                                                    {
+                                                        "key":  "Content-Type",
+                                                        "value":  "application/json"
+                                                    }
+                                                ],
+                                     "url":  "{{base_url}}/api/auth/availability/email",
+                                     "body":  {
+                                                  "raw":  "{\r\n    \"email\":  \"{{email}}\"\r\n}",
+                                                  "options":  {
+                                                                  "raw":  {
+                                                                              "language":  "json"
+                                                                          }
+                                                              },
+                                                  "mode":  "raw"
+                                              }
+                                 },
+                     "response":  [
+
+                                  ]
+                 },
+                 {
+                     "name":  "Username availability",
+                     "request":  {
+                                     "method":  "POST",
+                                     "header":  [
+                                                    {
+                                                        "key":  "Accept",
+                                                        "value":  "application/json"
+                                                    },
+                                                    {
+                                                        "key":  "Content-Type",
+                                                        "value":  "application/json"
+                                                    }
+                                                ],
+                                     "url":  "{{base_url}}/api/auth/availability/username",
+                                     "body":  {
+                                                  "raw":  "{\r\n    \"username\":  \"{{username}}\"\r\n}",
+                                                  "options":  {
+                                                                  "raw":  {
+                                                                              "language":  "json"
+                                                                          }
+                                                              },
+                                                  "mode":  "raw"
+                                              }
+                                 },
+                     "response":  [
+
+                                  ]
+                 },
+                 {
+                     "name":  "Registration preparation (compatibility)",
+                     "request":  {
+                                     "method":  "POST",
+                                     "header":  [
+                                                    {
+                                                        "key":  "Accept",
+                                                        "value":  "application/json"
+                                                    },
+                                                    {
+                                                        "key":  "Content-Type",
+                                                        "value":  "application/json"
+                                                    }
+                                                ],
+                                     "url":  "{{base_url}}/api/auth/register/prepare",
+                                     "body":  {
+                                                  "raw":  "{\r\n    \"country\":  \"Egypt\",\r\n    \"password_confirmation\":  \"{{password}}\",\r\n    \"region\":  \"Cairo\",\r\n    \"username\":  \"{{username}}\",\r\n    \"password\":  \"{{password}}\",\r\n    \"role\":  \"{{role}}\",\r\n    \"first_name\":  \"Amina\",\r\n    \"address\":  \"12 Nile Street\",\r\n    \"language\":  \"en\",\r\n    \"phone_number\":  \"{{phone_number}}\",\r\n    \"last_name\":  \"Hassan\",\r\n    \"email\":  \"{{email}}\"\r\n}",
+                                                  "options":  {
+                                                                  "raw":  {
+                                                                              "language":  "json"
+                                                                          }
+                                                              },
+                                                  "mode":  "raw"
+                                              }
+                                 },
+                     "response":  [
+
+                                  ]
+                 },
+                 {
+                     "name":  "Signup start",
+                     "request":  {
+                                     "method":  "POST",
+                                     "header":  [
+                                                    {
+                                                        "key":  "Accept",
+                                                        "value":  "application/json"
+                                                    },
+                                                    {
+                                                        "key":  "Content-Type",
+                                                        "value":  "application/json"
+                                                    }
+                                                ],
+                                     "url":  "{{base_url}}/api/auth/signup/start",
+                                     "body":  {
+                                                  "raw":  "{\r\n    \"country\":  \"Egypt\",\r\n    \"password_confirmation\":  \"{{password}}\",\r\n    \"region\":  \"Cairo\",\r\n    \"username\":  \"{{username}}\",\r\n    \"password\":  \"{{password}}\",\r\n    \"role\":  \"{{role}}\",\r\n    \"first_name\":  \"Amina\",\r\n    \"address\":  \"12 Nile Street\",\r\n    \"language\":  \"en\",\r\n    \"phone_number\":  \"{{phone_number}}\",\r\n    \"last_name\":  \"Hassan\",\r\n    \"email\":  \"{{email}}\"\r\n}",
+                                                  "options":  {
+                                                                  "raw":  {
+                                                                              "language":  "json"
+                                                                          }
+                                                              },
+                                                  "mode":  "raw"
+                                              }
+                                 },
+                     "response":  [
+
+                                  ],
+                     "event":  [
+                                   {
+                                       "script":  {
+                                                      "exec":  [
+                                                                   "if ([200, 201].includes(pm.response.code)) {",
+                                                                   "  const data = pm.response.json().data || {};",
+                                                                   "  if (data.attempt_id \u0026\u0026 data.attempt_token) {",
+                                                                   "    pm.environment.unset(\"auth_token\"); pm.environment.unset(\"verification_proof\");",
+                                                                   "    pm.environment.set(\"attempt_id\", data.attempt_id);",
+                                                                   "    pm.environment.set(\"attempt_token\", data.attempt_token);",
+                                                                   "    pm.environment.set(\"purpose\", data.purpose);",
+                                                                   "  }",
+                                                                   "  if (data.verification_proof) pm.environment.set(\"verification_proof\", data.verification_proof);",
+                                                                   "  if (data.token) { pm.environment.set(\"auth_token\", data.token); pm.environment.unset(\"verification_proof\"); }",
+                                                                   "}"
+                                                               ],
+                                                      "type":  "text/javascript"
+                                                  },
+                                       "listen":  "test"
+                                   }
+                               ]
+                 },
+                 {
+                     "name":  "Login preparation (compatibility, not authentication)",
+                     "request":  {
+                                     "method":  "POST",
+                                     "header":  [
+                                                    {
+                                                        "key":  "Accept",
+                                                        "value":  "application/json"
+                                                    },
+                                                    {
+                                                        "key":  "Content-Type",
+                                                        "value":  "application/json"
+                                                    }
+                                                ],
+                                     "url":  "{{base_url}}/api/auth/login",
+                                     "body":  {
+                                                  "raw":  "{\r\n    \"password\":  \"{{password}}\",\r\n    \"email\":  \"{{email}}\"\r\n}",
+                                                  "options":  {
+                                                                  "raw":  {
+                                                                              "language":  "json"
+                                                                          }
+                                                              },
+                                                  "mode":  "raw"
+                                              }
+                                 },
+                     "response":  [
+
+                                  ]
+                 },
+                 {
+                     "name":  "Login start",
+                     "request":  {
+                                     "method":  "POST",
+                                     "header":  [
+                                                    {
+                                                        "key":  "Accept",
+                                                        "value":  "application/json"
+                                                    },
+                                                    {
+                                                        "key":  "Content-Type",
+                                                        "value":  "application/json"
+                                                    }
+                                                ],
+                                     "url":  "{{base_url}}/api/auth/login/start",
+                                     "body":  {
+                                                  "raw":  "{\r\n    \"email\":  \"{{email}}\",\r\n    \"language\":  \"en\",\r\n    \"password\":  \"{{password}}\"\r\n}",
+                                                  "options":  {
+                                                                  "raw":  {
+                                                                              "language":  "json"
+                                                                          }
+                                                              },
+                                                  "mode":  "raw"
+                                              }
+                                 },
+                     "response":  [
+
+                                  ],
+                     "event":  [
+                                   {
+                                       "script":  {
+                                                      "exec":  [
+                                                                   "if ([200, 201].includes(pm.response.code)) {",
+                                                                   "  const data = pm.response.json().data || {};",
+                                                                   "  if (data.attempt_id \u0026\u0026 data.attempt_token) {",
+                                                                   "    pm.environment.unset(\"auth_token\"); pm.environment.unset(\"verification_proof\");",
+                                                                   "    pm.environment.set(\"attempt_id\", data.attempt_id);",
+                                                                   "    pm.environment.set(\"attempt_token\", data.attempt_token);",
+                                                                   "    pm.environment.set(\"purpose\", data.purpose);",
+                                                                   "  }",
+                                                                   "  if (data.verification_proof) pm.environment.set(\"verification_proof\", data.verification_proof);",
+                                                                   "  if (data.token) { pm.environment.set(\"auth_token\", data.token); pm.environment.unset(\"verification_proof\"); }",
+                                                                   "}"
+                                                               ],
+                                                      "type":  "text/javascript"
+                                                  },
+                                       "listen":  "test"
+                                   }
+                               ]
+                 },
+                 {
+                     "name":  "OTP send or resend (real WhatsApp when configured)",
+                     "request":  {
+                                     "method":  "POST",
+                                     "header":  [
+                                                    {
+                                                        "key":  "Accept",
+                                                        "value":  "application/json"
+                                                    },
+                                                    {
+                                                        "key":  "Content-Type",
+                                                        "value":  "application/json"
+                                                    }
+                                                ],
+                                     "url":  "{{base_url}}/api/auth/otp/send",
+                                     "body":  {
+                                                  "raw":  "{\r\n    \"attempt_token\":  \"{{attempt_token}}\",\r\n    \"attempt_id\":  \"{{attempt_id}}\"\r\n}",
+                                                  "options":  {
+                                                                  "raw":  {
+                                                                              "language":  "json"
+                                                                          }
+                                                              },
+                                                  "mode":  "raw"
+                                              }
+                                 },
+                     "response":  [
+
+                                  ]
+                 },
+                 {
+                     "name":  "OTP verify (enter delivered code locally)",
+                     "request":  {
+                                     "method":  "POST",
+                                     "header":  [
+                                                    {
+                                                        "key":  "Accept",
+                                                        "value":  "application/json"
+                                                    },
+                                                    {
+                                                        "key":  "Content-Type",
+                                                        "value":  "application/json"
+                                                    }
+                                                ],
+                                     "url":  "{{base_url}}/api/auth/otp/verify",
+                                     "body":  {
+                                                  "raw":  "{\r\n    \"attempt_id\":  \"{{attempt_id}}\",\r\n    \"purpose\":  \"{{purpose}}\",\r\n    \"code\":  \"{{otp_code}}\",\r\n    \"attempt_token\":  \"{{attempt_token}}\"\r\n}",
+                                                  "options":  {
+                                                                  "raw":  {
+                                                                              "language":  "json"
+                                                                          }
+                                                              },
+                                                  "mode":  "raw"
+                                              }
+                                 },
+                     "response":  [
+
+                                  ],
+                     "event":  [
+                                   {
+                                       "script":  {
+                                                      "exec":  [
+                                                                   "if ([200, 201].includes(pm.response.code)) {",
+                                                                   "  const data = pm.response.json().data || {};",
+                                                                   "  if (data.attempt_id \u0026\u0026 data.attempt_token) {",
+                                                                   "    pm.environment.unset(\"auth_token\"); pm.environment.unset(\"verification_proof\");",
+                                                                   "    pm.environment.set(\"attempt_id\", data.attempt_id);",
+                                                                   "    pm.environment.set(\"attempt_token\", data.attempt_token);",
+                                                                   "    pm.environment.set(\"purpose\", data.purpose);",
+                                                                   "  }",
+                                                                   "  if (data.verification_proof) pm.environment.set(\"verification_proof\", data.verification_proof);",
+                                                                   "  if (data.token) { pm.environment.set(\"auth_token\", data.token); pm.environment.unset(\"verification_proof\"); }",
+                                                                   "}"
+                                                               ],
+                                                      "type":  "text/javascript"
+                                                  },
+                                       "listen":  "test"
+                                   }
+                               ]
+                 },
+                 {
+                     "name":  "Finalize verified signup",
+                     "request":  {
+                                     "method":  "POST",
+                                     "header":  [
+                                                    {
+                                                        "key":  "Accept",
+                                                        "value":  "application/json"
+                                                    },
+                                                    {
+                                                        "key":  "Content-Type",
+                                                        "value":  "application/json"
+                                                    }
+                                                ],
+                                     "url":  "{{base_url}}/api/auth/register",
+                                     "body":  {
+                                                  "raw":  "{\r\n    \"attempt_id\":  \"{{attempt_id}}\",\r\n    \"verification_proof\":  \"{{verification_proof}}\",\r\n    \"attempt_token\":  \"{{attempt_token}}\"\r\n}",
+                                                  "options":  {
+                                                                  "raw":  {
+                                                                              "language":  "json"
+                                                                          }
+                                                              },
+                                                  "mode":  "raw"
+                                              }
+                                 },
+                     "response":  [
+
+                                  ],
+                     "event":  [
+                                   {
+                                       "script":  {
+                                                      "exec":  [
+                                                                   "if ([200, 201].includes(pm.response.code)) {",
+                                                                   "  const data = pm.response.json().data || {};",
+                                                                   "  if (data.attempt_id \u0026\u0026 data.attempt_token) {",
+                                                                   "    pm.environment.unset(\"auth_token\"); pm.environment.unset(\"verification_proof\");",
+                                                                   "    pm.environment.set(\"attempt_id\", data.attempt_id);",
+                                                                   "    pm.environment.set(\"attempt_token\", data.attempt_token);",
+                                                                   "    pm.environment.set(\"purpose\", data.purpose);",
+                                                                   "  }",
+                                                                   "  if (data.verification_proof) pm.environment.set(\"verification_proof\", data.verification_proof);",
+                                                                   "  if (data.token) { pm.environment.set(\"auth_token\", data.token); pm.environment.unset(\"verification_proof\"); }",
+                                                                   "}"
+                                                               ],
+                                                      "type":  "text/javascript"
+                                                  },
+                                       "listen":  "test"
+                                   }
+                               ]
+                 },
+                 {
+                     "name":  "Current authenticated user",
+                     "request":  {
+                                     "method":  "GET",
+                                     "header":  [
+                                                    {
+                                                        "key":  "Accept",
+                                                        "value":  "application/json"
+                                                    },
+                                                    {
+                                                        "key":  "Content-Type",
+                                                        "value":  "application/json"
+                                                    },
+                                                    {
+                                                        "key":  "Authorization",
+                                                        "value":  "Bearer {{auth_token}}"
+                                                    }
+                                                ],
+                                     "url":  "{{base_url}}/api/user"
+                                 },
+                     "response":  [
+
+                                  ]
+                 },
+                 {
+                     "name":  "Logout current token",
+                     "request":  {
+                                     "method":  "POST",
+                                     "header":  [
+                                                    {
+                                                        "key":  "Accept",
+                                                        "value":  "application/json"
+                                                    },
+                                                    {
+                                                        "key":  "Content-Type",
+                                                        "value":  "application/json"
+                                                    },
+                                                    {
+                                                        "key":  "Authorization",
+                                                        "value":  "Bearer {{auth_token}}"
+                                                    }
+                                                ],
+                                     "url":  "{{base_url}}/api/auth/logout"
+                                 },
+                     "response":  [
+
+                                  ],
+                     "event":  [
+                                   {
+                                       "script":  {
+                                                      "exec":  [
+                                                                   "if (pm.response.code === 204) { [\"auth_token\", \"attempt_token\", \"verification_proof\", \"otp_code\"].forEach(key =\u003e pm.environment.unset(key)); }"
+                                                               ],
+                                                      "type":  "text/javascript"
+                                                  },
+                                       "listen":  "test"
+                                   }
+                               ]
+                 }
+             ]
+}
