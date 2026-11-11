@@ -1,0 +1,16 @@
+$kind: http-request
+url: "{{base_url}}/patients/{{patient_id}}/medication-doses/{{dose_id}}"
+method: GET
+headers:
+  Accept: application/json
+auth:
+  type: bearer
+  credentials:
+    token: "{{patient_token}}"
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Expected HTTP 200', () => pm.response.to.have.status(200));
+      pm.test('Private no-store response', () => { const h = pm.response.headers.get('Cache-Control') || ''; pm.expect(h).to.include('private'); pm.expect(h).to.include('no-store'); });
+    language: text/javascript
+order: 3000

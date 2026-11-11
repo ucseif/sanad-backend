@@ -9,6 +9,8 @@ use App\Support\AuthApiResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
+require __DIR__.'/medications.php';
+
 // Get authenticated user
 Route::get('/user', function (Request $request) {
     return AuthApiResponse::success('user-retrieved', ['user' => (new UserResource($request->user()))->resolve($request)]);

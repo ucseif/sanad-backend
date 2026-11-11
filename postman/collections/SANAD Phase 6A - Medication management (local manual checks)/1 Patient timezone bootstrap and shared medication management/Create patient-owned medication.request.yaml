@@ -1,0 +1,49 @@
+$kind: http-request
+url: "{{base_url}}/patients/{{patient_id}}/medications"
+method: POST
+headers:
+  Accept: application/json
+  Idempotency-Key: "{{idempotency_key}}"
+  Content-Type: application/json
+body:
+  type: json
+  content: |-
+    {
+      "prescription": {
+        "name": "Example medication",
+        "dose_amount": "1",
+        "dose_unit": "tablet",
+        "form": "tablet",
+        "relation_to_meals": "no_preference",
+        "instructions": "",
+        "special_notes": ""
+      },
+      "schedule": {
+        "frequency": "once_daily",
+        "timezone": "{{timezone}}",
+        "start_date": "{{date}}",
+        "end_date": null,
+        "times": [
+          "08:00"
+        ],
+        "weekdays": [],
+        "interval_hours": null,
+        "anchor_time": null
+      },
+      "reminder_preferences": {
+        "enable_medication_reminders": true,
+        "notify_caregiver_if_missed": false,
+        "escalation_delay_minutes": 30
+      }
+    }
+auth:
+  type: bearer
+  credentials:
+    token: "{{patient_token}}"
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Expected HTTP 201', () => pm.response.to.have.status(201));
+      pm.test('Private no-store response', () => { const h = pm.response.headers.get('Cache-Control') || ''; pm.expect(h).to.include('private'); pm.expect(h).to.include('no-store'); });
+    language: text/javascript
+order: 3000

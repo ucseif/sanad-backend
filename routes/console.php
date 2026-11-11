@@ -15,3 +15,8 @@ Artisan::command('auth:prune-attempts', function () {
 })->purpose('Remove expired authentication attempt state after its retention period');
 
 Schedule::command('auth:prune-attempts')->daily();
+
+// Opt-in only. No new recurring process or notification transport is activated.
+if (config('medication.scheduler_enabled') === true) {
+    Schedule::command('medication:evaluate --cycle')->everyMinute()->withoutOverlapping(10);
+}

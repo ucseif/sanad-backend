@@ -1,0 +1,25 @@
+$kind: http-request
+url: "{{base_url}}/patients/{{patient_id}}/medications/{{medication_id}}/reminder-preferences"
+method: PATCH
+headers:
+  Accept: application/json
+  Idempotency-Key: "{{idempotency_key}}"
+  Content-Type: application/json
+body:
+  type: json
+  content: |-
+    {
+      "expected_version": "{{preferences_version}}",
+      "enable_medication_reminders": false
+    }
+auth:
+  type: bearer
+  credentials:
+    token: "{{patient_token}}"
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Expected HTTP 200', () => pm.response.to.have.status(200));
+      pm.test('Private no-store response', () => { const h = pm.response.headers.get('Cache-Control') || ''; pm.expect(h).to.include('private'); pm.expect(h).to.include('no-store'); });
+    language: text/javascript
+order: 10000

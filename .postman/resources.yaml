@@ -8,6 +8,7 @@ cloudResources:
   collections:
     ../postman/collections/SANAD Phase 2B - Local secure WhatsApp authentication: f241297a-f7c5-4591-9daf-a9a1a31fb4df
     ../postman/collections/SANAD Local Password Recovery: 733b9845-45fa-4b10-8091-81aa1a974083
+    ../postman/collections/SANAD Phase 6A - Medication management (local manual checks): c6301f1d-858a-43ed-bc1b-1483b6bc0667
 
 # All resources in the `postman/` folder are automatically registered in Local View.
 # Point to additional files outside the `postman/` folder to register them individually. Example:

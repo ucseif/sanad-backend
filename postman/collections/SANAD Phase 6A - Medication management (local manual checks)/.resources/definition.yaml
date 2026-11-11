@@ -1,0 +1,29 @@
+$kind: collection
+name: SANAD Phase 6A ? Medication management (local manual checks)
+description: Manual alternatives, not a sequential runner. Blank tokens/IDs/timezone. No real notifications. Confirm patient timezone before relying on defaults. Use only approved local synthetic accounts, update versions and change UUID key for each new operation. Preserve key only for exact retry. No Flutter changes.
+variables:
+  base_url: http://127.0.0.1:8000/api/v1
+  patient_token: ""
+  caregiver_token: ""
+  unrelated_token: ""
+  patient_id: ""
+  medication_id: ""
+  dose_id: ""
+  timezone: ""
+  date: 2026-11-11
+  expected_version: "1"
+  settings_version: "0"
+  preferences_version: "1"
+  dose_version: "1"
+  idempotency_key: ""
+scripts:
+  - type: http:beforeRequest
+    code: |-
+      function deny(message) { pm.execution.skipRequest(); throw new Error(message); }
+      const raw = pm.variables.get('base_url') || '';
+      let parsed; try { parsed = new URL(raw); } catch (_) { deny('Invalid local API URL'); }
+      if (parsed.protocol !== 'http:' || !['127.0.0.1','localhost','[::1]'].includes(parsed.hostname) || parsed.username || parsed.password || parsed.search || parsed.hash || ![parsed.origin + '/api/v1', parsed.origin + '/api/v1/'].includes(raw)) deny('Local API v1 origins only');
+      if (!/^[1-9][0-9]*$/.test(pm.variables.get('patient_id') || '')) deny('Set an explicitly authorized local patient ID');
+      if (!['patient_token','caregiver_token','unrelated_token'].some(k => String(pm.variables.get(k) || '').trim())) deny('Populate approved local test token(s)');
+      if (pm.request.method !== 'GET' && !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(pm.variables.get('idempotency_key') || '')) deny('Set a fresh UUID for a new operation; preserve it only for identical retries');
+    language: text/javascript

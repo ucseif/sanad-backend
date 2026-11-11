@@ -1,0 +1,1622 @@
+{
+  "info": {
+    "name": "SANAD Phase 6A ? Medication management (local manual checks)",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "Manual alternatives, not a sequential runner. Blank tokens/IDs/timezone. No real notifications. Confirm patient timezone before relying on defaults. Use only approved local synthetic accounts, update versions and change UUID key for each new operation. Preserve key only for exact retry. No Flutter changes."
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://127.0.0.1:8000/api/v1",
+      "type": "string"
+    },
+    {
+      "key": "patient_token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "caregiver_token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "unrelated_token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "patient_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "medication_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "dose_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "timezone",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "date",
+      "value": "2026-11-11",
+      "type": "string"
+    },
+    {
+      "key": "expected_version",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "settings_version",
+      "value": "0",
+      "type": "string"
+    },
+    {
+      "key": "preferences_version",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "dose_version",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "idempotency_key",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "function deny(message) { pm.execution.skipRequest(); throw new Error(message); }",
+          "const raw = pm.variables.get('base_url') || '';",
+          "let parsed; try { parsed = new URL(raw); } catch (_) { deny('Invalid local API URL'); }",
+          "if (parsed.protocol !== 'http:' || !['127.0.0.1','localhost','[::1]'].includes(parsed.hostname) || parsed.username || parsed.password || parsed.search || parsed.hash || ![parsed.origin + '/api/v1', parsed.origin + '/api/v1/'].includes(raw)) deny('Local API v1 origins only');",
+          "if (!/^[1-9][0-9]*$/.test(pm.variables.get('patient_id') || '')) deny('Set an explicitly authorized local patient ID');",
+          "if (!['patient_token','caregiver_token','unrelated_token'].some(k => String(pm.variables.get(k) || '').trim())) deny('Populate approved local test token(s)');",
+          "if (pm.request.method !== 'GET' && !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(pm.variables.get('idempotency_key') || '')) deny('Set a fresh UUID for a new operation; preserve it only for identical retries');"
+        ]
+      }
+    }
+  ],
+  "item": [
+    {
+      "name": "1 Patient timezone bootstrap and shared medication management",
+      "item": [
+        {
+          "name": "Read confirmed patient timezone",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{patient_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": "{{base_url}}/patients/{{patient_id}}/medication-settings",
+            "description": ""
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Expected HTTP 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Private no-store response', () => { const h = pm.response.headers.get('Cache-Control') || ''; pm.expect(h).to.include('private'); pm.expect(h).to.include('no-store'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Explicitly confirm patient timezone",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Idempotency-Key",
+                "value": "{{idempotency_key}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{patient_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": "{{base_url}}/patients/{{patient_id}}/medication-settings",
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"timezone\": \"{{timezone}}\",\n  \"expected_version\": \"{{settings_version}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Expected HTTP 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Private no-store response', () => { const h = pm.response.headers.get('Cache-Control') || ''; pm.expect(h).to.include('private'); pm.expect(h).to.include('no-store'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Create patient-owned medication",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Idempotency-Key",
+                "value": "{{idempotency_key}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{patient_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": "{{base_url}}/patients/{{patient_id}}/medications",
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"prescription\": {\n    \"name\": \"Example medication\",\n    \"dose_amount\": \"1\",\n    \"dose_unit\": \"tablet\",\n    \"form\": \"tablet\",\n    \"relation_to_meals\": \"no_preference\",\n    \"instructions\": \"\",\n    \"special_notes\": \"\"\n  },\n  \"schedule\": {\n    \"frequency\": \"once_daily\",\n    \"timezone\": \"{{timezone}}\",\n    \"start_date\": \"{{date}}\",\n    \"end_date\": null,\n    \"times\": [\n      \"08:00\"\n    ],\n    \"weekdays\": [],\n    \"interval_hours\": null,\n    \"anchor_time\": null\n  },\n  \"reminder_preferences\": {\n    \"enable_medication_reminders\": true,\n    \"notify_caregiver_if_missed\": false,\n    \"escalation_delay_minutes\": 30\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Expected HTTP 201', () => pm.response.to.have.status(201));",
+                  "pm.test('Private no-store response', () => { const h = pm.response.headers.get('Cache-Control') || ''; pm.expect(h).to.include('private'); pm.expect(h).to.include('no-store'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Create using already confirmed timezone default",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Idempotency-Key",
+                "value": "{{idempotency_key}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{patient_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": "{{base_url}}/patients/{{patient_id}}/medications",
+            "description": "Requires prior patient timezone confirmation. No silent Cairo fallback.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"prescription\": {\n    \"name\": \"Example medication\",\n    \"dose_amount\": \"1\",\n    \"dose_unit\": \"tablet\",\n    \"form\": \"tablet\",\n    \"relation_to_meals\": \"no_preference\",\n    \"instructions\": \"\",\n    \"special_notes\": \"\"\n  },\n  \"schedule\": {\n    \"frequency\": \"once_daily\",\n    \"start_date\": \"{{date}}\",\n    \"end_date\": null,\n    \"times\": [\n      \"08:00\"\n    ],\n    \"weekdays\": [],\n    \"interval_hours\": null,\n    \"anchor_time\": null\n  },\n  \"reminder_preferences\": {\n    \"enable_medication_reminders\": true,\n    \"notify_caregiver_if_missed\": false,\n    \"escalation_delay_minutes\": 30\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Expected HTTP 201', () => pm.response.to.have.status(201));",
+                  "pm.test('Private no-store response', () => { const h = pm.response.headers.get('Cache-Control') || ''; pm.expect(h).to.include('private'); pm.expect(h).to.include('no-store'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "List active medication records",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{patient_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": "{{base_url}}/patients/{{patient_id}}/medications?status=active&page=1&per_page=20",
+            "description": ""
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Expected HTTP 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Private no-store response', () => { const h = pm.response.headers.get('Cache-Control') || ''; pm.expect(h).to.include('private'); pm.expect(h).to.include('no-store'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Read current and pending prescription",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{patient_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": "{{base_url}}/patients/{{patient_id}}/medications/{{medication_id}}",
+            "description": ""
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Expected HTTP 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Private no-store response', () => { const h = pm.response.headers.get('Cache-Control') || ''; pm.expect(h).to.include('private'); pm.expect(h).to.include('no-store'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Edit future prescription effective next local day",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Idempotency-Key",
+                "value": "{{idempotency_key}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{patient_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": "{{base_url}}/patients/{{patient_id}}/medications/{{medication_id}}",
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"expected_version\": \"{{expected_version}}\",\n  \"prescription\": {\n    \"name\": \"Updated example medication\"\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Expected HTTP 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Private no-store response', () => { const h = pm.response.headers.get('Cache-Control') || ''; pm.expect(h).to.include('private'); pm.expect(h).to.include('no-store'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Edit future schedule effective next local day",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Idempotency-Key",
+                "value": "{{idempotency_key}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{patient_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": "{{base_url}}/patients/{{patient_id}}/medications/{{medication_id}}",
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"expected_version\": \"{{expected_version}}\",\n  \"schedule\": {\n    \"frequency\": \"once_daily\",\n    \"timezone\": \"{{timezone}}\",\n    \"start_date\": \"{{date}}\",\n    \"end_date\": null,\n    \"times\": [\n      \"09:00\"\n    ],\n    \"weekdays\": [],\n    \"interval_hours\": null,\n    \"anchor_time\": null\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Expected HTTP 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Private no-store response', () => { const h = pm.response.headers.get('Cache-Control') || ''; pm.expect(h).to.include('private'); pm.expect(h).to.include('no-store'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Read immutable schedule revisions",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{patient_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": "{{base_url}}/patients/{{patient_id}}/medications/{{medication_id}}/schedule-revisions?page=1&per_page=20",
+            "description": ""
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Expected HTTP 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Private no-store response', () => { const h = pm.response.headers.get('Cache-Control') || ''; pm.expect(h).to.include('private'); pm.expect(h).to.include('no-store'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Change ordinary reminder preference",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Idempotency-Key",
+                "value": "{{idempotency_key}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{patient_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": "{{base_url}}/patients/{{patient_id}}/medications/{{medication_id}}/reminder-preferences",
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"expected_version\": \"{{preferences_version}}\",\n  \"enable_medication_reminders\": false\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Expected HTTP 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Private no-store response', () => { const h = pm.response.headers.get('Cache-Control') || ''; pm.expect(h).to.include('private'); pm.expect(h).to.include('no-store'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Patient grants caregiver escalation consent",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Idempotency-Key",
+                "value": "{{idempotency_key}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{patient_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": "{{base_url}}/patients/{{patient_id}}/medications/{{medication_id}}/escalation-consent",
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"expected_version\": \"{{preferences_version}}\",\n  \"notify_caregiver_if_missed\": true,\n  \"escalation_delay_minutes\": 30\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Expected HTTP 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Private no-store response', () => { const h = pm.response.headers.get('Cache-Control') || ''; pm.expect(h).to.include('private'); pm.expect(h).to.include('no-store'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Patient withdraws caregiver escalation consent",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Idempotency-Key",
+                "value": "{{idempotency_key}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{patient_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": "{{base_url}}/patients/{{patient_id}}/medications/{{medication_id}}/escalation-consent",
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"expected_version\": \"{{preferences_version}}\",\n  \"notify_caregiver_if_missed\": false\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Expected HTTP 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Private no-store response', () => { const h = pm.response.headers.get('Cache-Control') || ''; pm.expect(h).to.include('private'); pm.expect(h).to.include('no-store'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Archive medication preserving history",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Idempotency-Key",
+                "value": "{{idempotency_key}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{patient_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": "{{base_url}}/patients/{{patient_id}}/medications/{{medication_id}}/archive",
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"expected_version\": \"{{expected_version}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Expected HTTP 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Private no-store response', () => { const h = pm.response.headers.get('Cache-Control') || ''; pm.expect(h).to.include('private'); pm.expect(h).to.include('no-store'); });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "2 Dashboard and patient-only intake alternatives",
+      "item": [
+        {
+          "name": "Daily dashboard includes separate missed doses",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{patient_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": "{{base_url}}/patients/{{patient_id}}/medication-dashboard?date={{date}}&timezone={{timezone}}&page=1&missed_page=1&per_page=20",
+            "description": ""
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Expected HTTP 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Private no-store response', () => { const h = pm.response.headers.get('Cache-Control') || ''; pm.expect(h).to.include('private'); pm.expect(h).to.include('no-store'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Selected date dose occurrences",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{patient_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": "{{base_url}}/patients/{{patient_id}}/medication-doses?from={{date}}&to={{date}}&timezone={{timezone}}",
+            "description": ""
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Expected HTTP 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Private no-store response', () => { const h = pm.response.headers.get('Cache-Control') || ''; pm.expect(h).to.include('private'); pm.expect(h).to.include('no-store'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Read dose and ordered audit events without recording Taken",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{patient_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": "{{base_url}}/patients/{{patient_id}}/medication-doses/{{dose_id}}",
+            "description": ""
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Expected HTTP 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Private no-store response', () => { const h = pm.response.headers.get('Cache-Control') || ''; pm.expect(h).to.include('private'); pm.expect(h).to.include('no-store'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Confirm actually Taken using server timestamp",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Idempotency-Key",
+                "value": "{{idempotency_key}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{patient_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": "{{base_url}}/patients/{{patient_id}}/medication-doses/{{dose_id}}/taken",
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"expected_version\": \"{{dose_version}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Expected HTTP 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Private no-store response', () => { const h = pm.response.headers.get('Cache-Control') || ''; pm.expect(h).to.include('private'); pm.expect(h).to.include('no-store'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Record Skipped",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Idempotency-Key",
+                "value": "{{idempotency_key}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{patient_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": "{{base_url}}/patients/{{patient_id}}/medication-doses/{{dose_id}}/skipped",
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"expected_version\": \"{{dose_version}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Expected HTTP 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Private no-store response', () => { const h = pm.response.headers.get('Cache-Control') || ''; pm.expect(h).to.include('private'); pm.expect(h).to.include('no-store'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Report late actual intake using server timestamp",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Idempotency-Key",
+                "value": "{{idempotency_key}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{patient_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": "{{base_url}}/patients/{{patient_id}}/medication-doses/{{dose_id}}/late-intake",
+            "description": "For a currently Missed dose. Optionally add actual_intake_at with the actual nonfuture RFC3339 timestamp, including an earlier intake reported offline.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"expected_version\": \"{{dose_version}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Expected HTTP 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Private no-store response', () => { const h = pm.response.headers.get('Cache-Control') || ''; pm.expect(h).to.include('private'); pm.expect(h).to.include('no-store'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Correct mistakenly recorded dose",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Idempotency-Key",
+                "value": "{{idempotency_key}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{patient_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": "{{base_url}}/patients/{{patient_id}}/medication-doses/{{dose_id}}/corrections",
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"expected_version\": \"{{dose_version}}\",\n  \"target_status\": \"unresolved\",\n  \"reason\": \"Correcting mistaken example entry\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Expected HTTP 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Private no-store response', () => { const h = pm.response.headers.get('Cache-Control') || ''; pm.expect(h).to.include('private'); pm.expect(h).to.include('no-store'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Create PRN example without mandatory times",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Idempotency-Key",
+                "value": "{{idempotency_key}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{patient_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": "{{base_url}}/patients/{{patient_id}}/medications",
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"prescription\": {\n    \"name\": \"Example medication\",\n    \"dose_amount\": \"1\",\n    \"dose_unit\": \"tablet\",\n    \"form\": \"tablet\",\n    \"relation_to_meals\": \"no_preference\",\n    \"instructions\": \"\",\n    \"special_notes\": \"\"\n  },\n  \"schedule\": {\n    \"frequency\": \"as_needed\",\n    \"timezone\": \"{{timezone}}\",\n    \"start_date\": \"{{date}}\",\n    \"end_date\": null,\n    \"times\": [],\n    \"weekdays\": [],\n    \"interval_hours\": null,\n    \"anchor_time\": null\n  },\n  \"reminder_preferences\": {\n    \"enable_medication_reminders\": true,\n    \"notify_caregiver_if_missed\": false,\n    \"escalation_delay_minutes\": 30\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Expected HTTP 201', () => pm.response.to.have.status(201));",
+                  "pm.test('Private no-store response', () => { const h = pm.response.headers.get('Cache-Control') || ''; pm.expect(h).to.include('private'); pm.expect(h).to.include('no-store'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Log actual PRN intake",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Idempotency-Key",
+                "value": "{{idempotency_key}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{patient_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": "{{base_url}}/patients/{{patient_id}}/medications/{{medication_id}}/prn-intakes",
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"expected_version\": \"{{expected_version}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Expected HTTP 201', () => pm.response.to.have.status(201));",
+                  "pm.test('Private no-store response', () => { const h = pm.response.headers.get('Cache-Control') || ''; pm.expect(h).to.include('private'); pm.expect(h).to.include('no-store'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Void mistaken PRN intake preserving events",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Idempotency-Key",
+                "value": "{{idempotency_key}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{patient_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": "{{base_url}}/patients/{{patient_id}}/medication-doses/{{dose_id}}/corrections",
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"expected_version\": \"{{dose_version}}\",\n  \"target_status\": \"void\",\n  \"reason\": \"Void mistaken PRN example\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Expected HTTP 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Private no-store response', () => { const h = pm.response.headers.get('Cache-Control') || ''; pm.expect(h).to.include('private'); pm.expect(h).to.include('no-store'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Read adherence history excluding PRN denominator",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{patient_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": "{{base_url}}/patients/{{patient_id}}/medications/{{medication_id}}/adherence?from={{date}}&to={{date}}&timezone={{timezone}}",
+            "description": ""
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Expected HTTP 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Private no-store response', () => { const h = pm.response.headers.get('Cache-Control') || ''; pm.expect(h).to.include('private'); pm.expect(h).to.include('no-store'); });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "3 Active caregiver shared access and denied operations",
+      "item": [
+        {
+          "name": "Caregiver independently creates shared patient medication",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Idempotency-Key",
+                "value": "{{idempotency_key}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{caregiver_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": "{{base_url}}/patients/{{patient_id}}/medications",
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"prescription\": {\n    \"name\": \"Example medication\",\n    \"dose_amount\": \"1\",\n    \"dose_unit\": \"tablet\",\n    \"form\": \"tablet\",\n    \"relation_to_meals\": \"no_preference\",\n    \"instructions\": \"\",\n    \"special_notes\": \"\"\n  },\n  \"schedule\": {\n    \"frequency\": \"once_daily\",\n    \"timezone\": \"{{timezone}}\",\n    \"start_date\": \"{{date}}\",\n    \"end_date\": null,\n    \"times\": [\n      \"08:00\"\n    ],\n    \"weekdays\": [],\n    \"interval_hours\": null,\n    \"anchor_time\": null\n  },\n  \"reminder_preferences\": {\n    \"enable_medication_reminders\": true,\n    \"notify_caregiver_if_missed\": false,\n    \"escalation_delay_minutes\": 30\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Expected HTTP 201', () => pm.response.to.have.status(201));",
+                  "pm.test('Private no-store response', () => { const h = pm.response.headers.get('Cache-Control') || ''; pm.expect(h).to.include('private'); pm.expect(h).to.include('no-store'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Caregiver reads same authoritative list",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{caregiver_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": "{{base_url}}/patients/{{patient_id}}/medications",
+            "description": ""
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Expected HTTP 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Private no-store response', () => { const h = pm.response.headers.get('Cache-Control') || ''; pm.expect(h).to.include('private'); pm.expect(h).to.include('no-store'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Caregiver reads same dashboard",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{caregiver_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": "{{base_url}}/patients/{{patient_id}}/medication-dashboard?date={{date}}&timezone={{timezone}}",
+            "description": ""
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Expected HTTP 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Private no-store response', () => { const h = pm.response.headers.get('Cache-Control') || ''; pm.expect(h).to.include('private'); pm.expect(h).to.include('no-store'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Caregiver edits shared future prescription",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Idempotency-Key",
+                "value": "{{idempotency_key}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{caregiver_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": "{{base_url}}/patients/{{patient_id}}/medications/{{medication_id}}",
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"expected_version\": \"{{expected_version}}\",\n  \"prescription\": {\n    \"special_notes\": \"Example user-provided note\"\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Expected HTTP 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Private no-store response', () => { const h = pm.response.headers.get('Cache-Control') || ''; pm.expect(h).to.include('private'); pm.expect(h).to.include('no-store'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Caregiver Taken denied",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Idempotency-Key",
+                "value": "{{idempotency_key}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{caregiver_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": "{{base_url}}/patients/{{patient_id}}/medication-doses/{{dose_id}}/taken",
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"expected_version\": \"{{dose_version}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Expected HTTP 403', () => pm.response.to.have.status(403));",
+                  "pm.test('Private no-store response', () => { const h = pm.response.headers.get('Cache-Control') || ''; pm.expect(h).to.include('private'); pm.expect(h).to.include('no-store'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Caregiver consent denied",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Idempotency-Key",
+                "value": "{{idempotency_key}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{caregiver_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": "{{base_url}}/patients/{{patient_id}}/medications/{{medication_id}}/escalation-consent",
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"expected_version\": \"{{preferences_version}}\",\n  \"notify_caregiver_if_missed\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Expected HTTP 403', () => pm.response.to.have.status(403));",
+                  "pm.test('Private no-store response', () => { const h = pm.response.headers.get('Cache-Control') || ''; pm.expect(h).to.include('private'); pm.expect(h).to.include('no-store'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Unrelated actor known medication ID denied",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{unrelated_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": "{{base_url}}/patients/{{patient_id}}/medications/{{medication_id}}",
+            "description": ""
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Expected HTTP 404', () => pm.response.to.have.status(404));",
+                  "pm.test('Private no-store response', () => { const h = pm.response.headers.get('Cache-Control') || ''; pm.expect(h).to.include('private'); pm.expect(h).to.include('no-store'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Forged actor identity rejected",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Idempotency-Key",
+                "value": "{{idempotency_key}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{patient_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": "{{base_url}}/patients/{{patient_id}}/medications",
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"prescription\": {\n    \"name\": \"Example medication\",\n    \"dose_amount\": \"1\",\n    \"dose_unit\": \"tablet\",\n    \"form\": \"tablet\",\n    \"relation_to_meals\": \"no_preference\",\n    \"instructions\": \"\",\n    \"special_notes\": \"\"\n  },\n  \"schedule\": {\n    \"frequency\": \"once_daily\",\n    \"timezone\": \"{{timezone}}\",\n    \"start_date\": \"{{date}}\",\n    \"end_date\": null,\n    \"times\": [\n      \"08:00\"\n    ],\n    \"weekdays\": [],\n    \"interval_hours\": null,\n    \"anchor_time\": null\n  },\n  \"reminder_preferences\": {\n    \"enable_medication_reminders\": true,\n    \"notify_caregiver_if_missed\": false,\n    \"escalation_delay_minutes\": 30\n  },\n  \"created_by\": 999\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Expected HTTP 422', () => pm.response.to.have.status(422));",
+                  "pm.test('Private no-store response', () => { const h = pm.response.headers.get('Cache-Control') || ''; pm.expect(h).to.include('private'); pm.expect(h).to.include('no-store'); });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

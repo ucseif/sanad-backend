@@ -38,6 +38,12 @@ class AppServiceProvider extends ServiceProvider
         )->withHeaders($headers);
 
         RateLimiter::for('auth-availability', fn (Request $request) => Limit::perMinute(30)->by('ip|'.$request->ip())->response($limited));
+        foreach (['read' => [60, 120], 'write' => [20, 60]] as $operation => [$userLimit, $ipLimit]) {
+            RateLimiter::for('medication-'.$operation, fn (Request $request) => [
+                Limit::perMinute($userLimit)->by('medication-'.$operation.'-user|'.$request->user()->id)->response($limited),
+                Limit::perMinute($ipLimit)->by('medication-'.$operation.'-ip|'.$request->ip())->response($limited),
+            ]);
+        }
         RateLimiter::for('caregiver-lookup', fn (Request $request) => [
             Limit::perMinute(10)->by('caregiver-lookup-user|'.$request->user()->id)->response($limited),
             Limit::perMinute(30)->by('caregiver-lookup-ip|'.$request->ip())->response($limited),
