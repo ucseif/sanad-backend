@@ -1,0 +1,128 @@
+[
+  {
+    "session": 0,
+    "channel": "Green",
+    "windows": 8,
+    "accepted": 7,
+    "rejected": 1,
+    "coverage": 0.875,
+    "paired": 7,
+    "invalid_ecg": 0,
+    "paired_coverage": 0.875,
+    "mae_bpm": 0.3790363919041084,
+    "rmse_bpm": 0.4583500328636434,
+    "max_abs_error_bpm": 0.6867785365567158,
+    "accepted_errors_gt3_bpm": 0,
+    "reasons": {
+      "irregular_pulse_intervals": 1,
+      "low_periodicity": 1,
+      "diffuse_spectrum": 1,
+      "peak_spectrum_disagreement": 1
+    }
+  },
+  {
+    "session": 0,
+    "channel": "Red",
+    "windows": 8,
+    "accepted": 0,
+    "rejected": 8,
+    "coverage": 0.0,
+    "paired": 0,
+    "invalid_ecg": 0,
+    "paired_coverage": 0.0,
+    "mae_bpm": null,
+    "rmse_bpm": null,
+    "max_abs_error_bpm": null,
+    "accepted_errors_gt3_bpm": 0,
+    "reasons": {
+      "irregular_pulse_intervals": 8,
+      "low_periodicity": 8,
+      "peak_spectrum_disagreement": 6,
+      "diffuse_spectrum": 6
+    }
+  },
+  {
+    "session": 0,
+    "channel": "IR",
+    "windows": 8,
+    "accepted": 0,
+    "rejected": 8,
+    "coverage": 0.0,
+    "paired": 0,
+    "invalid_ecg": 0,
+    "paired_coverage": 0.0,
+    "mae_bpm": null,
+    "rmse_bpm": null,
+    "max_abs_error_bpm": null,
+    "accepted_errors_gt3_bpm": 0,
+    "reasons": {
+      "irregular_pulse_intervals": 8,
+      "low_periodicity": 8,
+      "peak_spectrum_disagreement": 2,
+      "diffuse_spectrum": 7
+    }
+  },
+  {
+    "session": 1,
+    "channel": "Green",
+    "windows": 8,
+    "accepted": 4,
+    "rejected": 4,
+    "coverage": 0.5,
+    "paired": 4,
+    "invalid_ecg": 0,
+    "paired_coverage": 0.5,
+    "mae_bpm": 0.12505602530338678,
+    "rmse_bpm": 0.1450783638668775,
+    "max_abs_error_bpm": 0.23248193567506803,
+    "accepted_errors_gt3_bpm": 0,
+    "reasons": {
+      "irregular_pulse_intervals": 4,
+      "low_periodicity": 3,
+      "diffuse_spectrum": 2,
+      "peak_spectrum_disagreement": 1
+    }
+  },
+  {
+    "session": 1,
+    "channel": "Red",
+    "windows": 8,
+    "accepted": 0,
+    "rejected": 8,
+    "coverage": 0.0,
+    "paired": 0,
+    "invalid_ecg": 0,
+    "paired_coverage": 0.0,
+    "mae_bpm": null,
+    "rmse_bpm": null,
+    "max_abs_error_bpm": null,
+    "accepted_errors_gt3_bpm": 0,
+    "reasons": {
+      "irregular_pulse_intervals": 8,
+      "low_periodicity": 8,
+      "diffuse_spectrum": 5,
+      "peak_spectrum_disagreement": 8
+    }
+  },
+  {
+    "session": 1,
+    "channel": "IR",
+    "windows": 8,
+    "accepted": 0,
+    "rejected": 8,
+    "coverage": 0.0,
+    "paired": 0,
+    "invalid_ecg": 0,
+    "paired_coverage": 0.0,
+    "mae_bpm": null,
+    "rmse_bpm": null,
+    "max_abs_error_bpm": null,
+    "accepted_errors_gt3_bpm": 0,
+    "reasons": {
+      "irregular_pulse_intervals": 8,
+      "low_periodicity": 8,
+      "diffuse_spectrum": 6,
+      "peak_spectrum_disagreement": 8
+    }
+  }
+]

@@ -1,0 +1,16 @@
+$kind: http-request
+url: "{{base_url}}/api/auth/otp/send"
+method: POST
+headers:
+  Accept: application/json
+  Content-Type: application/json
+body:
+  type: json
+  content: "{\r
+
+    \    \"attempt_token\":  \"{{attempt_token}}\",\r
+
+    \    \"attempt_id\":  \"{{attempt_id}}\"\r
+
+    }"
+order: 8000

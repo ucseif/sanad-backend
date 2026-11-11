@@ -1,0 +1,17 @@
+[
+  {
+    "session": 0,
+    "window": 1,
+    "selection": "accepted"
+  },
+  {
+    "session": 0,
+    "window": 0,
+    "selection": "weak_or_distorted_waveform_evidence"
+  },
+  {
+    "session": 1,
+    "window": 2,
+    "selection": "mixed_or_unresolved"
+  }
+]

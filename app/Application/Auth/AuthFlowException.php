@@ -10,6 +10,7 @@ class AuthFlowException extends RuntimeException
     {
         parent::__construct(match ($machineCode) {
             'invalid-credentials' => 'The email or password is incorrect.',
+            'recovery-not-eligible' => 'Unable to continue with these details. Check them and try again.',
             'invalid-code' => 'The verification code is invalid.',
             'invalid-challenge' => 'The authentication attempt is invalid.',
             'otp-expired' => 'The authentication attempt or verification proof has expired.',

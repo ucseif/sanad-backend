@@ -51,7 +51,7 @@ final class PostgresTestDatabase
                 current_setting('TimeZone') AS timezone,
                 has_database_privilege(current_user, current_database(), 'CONNECT')::int AS can_connect,
                 has_database_privilege(current_user, current_database(), 'CREATE')::int AS can_create,
-                (SELECT count(*) FROM pg_namespace WHERE nspname LIKE 'sanad_phase1_%' OR nspname LIKE 'sanad_otp_race_%') AS test_schema_count
+                (SELECT count(*) FROM pg_namespace WHERE nspname LIKE 'sanad_phase1_%' OR nspname LIKE 'sanad_otp_race_%' OR nspname LIKE 'sanad_link_race_%') AS test_schema_count
             SQL);
     }
 }

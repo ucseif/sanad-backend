@@ -1,0 +1,14 @@
+{
+  "Green": {
+    "potential_threshold_over_rejection": 5,
+    "mixed_or_unresolved": 3,
+    "weak_or_distorted_waveform_evidence": 17,
+    "accepted": 6
+  },
+  "Red": {
+    "weak_or_distorted_waveform_evidence": 31
+  },
+  "IR": {
+    "weak_or_distorted_waveform_evidence": 31
+  }
+}

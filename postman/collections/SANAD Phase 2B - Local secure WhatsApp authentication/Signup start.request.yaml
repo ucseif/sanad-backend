@@ -1,0 +1,51 @@
+$kind: http-request
+url: "{{base_url}}/api/auth/signup/start"
+method: POST
+headers:
+  Accept: application/json
+  Content-Type: application/json
+body:
+  type: json
+  content: "{\r
+
+    \    \"country\":  \"Egypt\",\r
+
+    \    \"password_confirmation\":  \"{{password}}\",\r
+
+    \    \"region\":  \"Cairo\",\r
+
+    \    \"username\":  \"{{username}}\",\r
+
+    \    \"password\":  \"{{password}}\",\r
+
+    \    \"role\":  \"{{role}}\",\r
+
+    \    \"first_name\":  \"Amina\",\r
+
+    \    \"address\":  \"12 Nile Street\",\r
+
+    \    \"language\":  \"en\",\r
+
+    \    \"phone_number\":  \"{{phone_number}}\",\r
+
+    \    \"last_name\":  \"Hassan\",\r
+
+    \    \"email\":  \"{{email}}\"\r
+
+    }"
+scripts:
+  - type: afterResponse
+    code: |-
+      if ([200, 201].includes(pm.response.code)) {
+        const data = pm.response.json().data || {};
+        if (data.attempt_id && data.attempt_token) {
+          pm.environment.unset("auth_token"); pm.environment.unset("verification_proof");
+          pm.environment.set("attempt_id", data.attempt_id);
+          pm.environment.set("attempt_token", data.attempt_token);
+          pm.environment.set("purpose", data.purpose);
+        }
+        if (data.verification_proof) pm.environment.set("verification_proof", data.verification_proof);
+        if (data.token) { pm.environment.set("auth_token", data.token); pm.environment.unset("verification_proof"); }
+      }
+    language: text/javascript
+order: 5000

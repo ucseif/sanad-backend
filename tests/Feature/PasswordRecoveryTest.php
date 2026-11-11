@@ -27,19 +27,32 @@ class PasswordRecoveryTest extends TestCase
         $this->provider();
     }
 
-    public function test_existing_unknown_and_unverified_emails_receive_the_same_private_contract(): void
+    public function test_email_eligibility_is_explicit_and_creates_no_attempt_message_or_session(): void
     {
         $this->user();
         $this->user('unverified@example.com', false);
-        foreach (['amina@example.com', 'unknown@example.com', 'unverified@example.com'] as $email) {
-            $response = $this->postJson('/api/auth/password/forgot', ['email' => $email]);
-            $response->assertStatus(202)->assertJsonPath('code', 'password-recovery-started')
-                ->assertJsonPath('data.purpose', 'password_reset')->assertJsonPath('data.authenticated', false);
-            $this->assertSame(['attempt_id', 'attempt_token', 'purpose', 'expires_at', 'authenticated'], array_keys($response->json('data')));
-            $this->assertFalse($response->headers->has('Set-Cookie'));
+        foreach ([' AMINA@EXAMPLE.COM ' => true, 'unknown@example.com' => false, 'unverified@example.com' => false] as $email => $eligible) {
+            $this->postJson('/api/auth/password/eligibility', ['email' => $email])->assertOk()
+                ->assertExactJson(['code' => 'recovery-eligibility-checked', 'data' => ['eligible' => $eligible]]);
         }
         Http::assertNothingSent();
+        $this->assertSame(0, DB::table('auth_attempts')->count());
+        $this->assertSame(0, DB::table('jobs')->count());
         $this->assertSame(0, DB::table('personal_access_tokens')->count());
+    }
+
+    public function test_email_eligibility_and_phone_validation_share_recovery_throttles(): void
+    {
+        for ($i = 0; $i < 3; $i++) {
+            $this->postJson('/api/auth/password/eligibility', ['email' => 'unknown@example.com'])->assertOk();
+        }
+        for ($i = 0; $i < 2; $i++) {
+            $this->postJson('/api/auth/password/forgot', ['email' => 'unknown@example.com', 'phone_number' => '+201012345678'])
+                ->assertStatus(422)->assertJsonPath('code', 'recovery-not-eligible');
+        }
+        $this->postJson('/api/auth/password/eligibility', ['email' => ' UNKNOWN@EXAMPLE.COM '])->assertStatus(429);
+        $this->assertSame(0, DB::table('auth_attempts')->count());
+        Http::assertNothingSent();
     }
 
     public function test_send_is_queued_and_delivers_only_to_the_stored_verified_phone(): void
@@ -54,19 +67,63 @@ class PasswordRecoveryTest extends TestCase
         $this->assertSame(0, DB::table('jobs')->count());
     }
 
-    public function test_unknown_unverified_and_changed_phones_never_receive_otp_or_get_proofs(): void
+    public function test_mismatched_phone_blocks_before_creating_an_attempt_or_dispatching(): void
+    {
+        $this->user();
+        $this->postJson('/api/auth/password/forgot', ['email' => 'amina@example.com', 'phone_number' => '+15551234567'])
+            ->assertStatus(422)->assertJsonPath('code', 'recovery-not-eligible')->assertJsonMissingPath('data');
+        $this->assertSame(0, DB::table('auth_attempts')->count());
+        $this->assertSame(0, DB::table('jobs')->count());
+        $this->assertSame(0, DB::table('personal_access_tokens')->count());
+        Http::assertNothingSent();
+    }
+
+    public function test_real_attempt_and_dispatch_are_explicitly_confirmed(): void
+    {
+        $this->user();
+        $response = $this->postJson('/api/auth/password/forgot', ['email' => 'amina@example.com', 'phone_number' => '+201012345678'])
+            ->assertStatus(202)->assertJsonPath('data.recovery_confirmed', true)->assertJsonPath('data.purpose', 'password_reset');
+        $this->assertStringNotContainsString('+201012345678', $response->getContent());
+        $this->assertSame(1, DB::table('auth_attempts')->count());
+        $this->assertSame(0, DB::table('jobs')->count());
+        $attempt = ['attempt_id' => $response->json('data.attempt_id'), 'attempt_token' => $response->json('data.attempt_token')];
+        $this->send($attempt)->assertStatus(202)->assertJsonPath('data.recovery_confirmed', true);
+        $this->assertSame(1, DB::table('jobs')->count());
+        $this->verify($attempt)->assertStatus(422);
+        Http::assertNotSent(fn ($request) => str_ends_with($request->url(), '/otp'));
+    }
+
+    public function test_recovery_requires_a_valid_international_phone_number(): void
+    {
+        $this->withoutMiddleware(\Illuminate\Routing\Middleware\ThrottleRequests::class);
+        foreach ([null, '', '201012345678', '+20 1012345678', '+123', ['+201012345678']] as $phone) {
+            $this->postJson('/api/auth/password/forgot', ['email' => 'amina@example.com', 'phone_number' => $phone])
+                ->assertStatus(422)->assertJsonValidationErrors('phone_number');
+        }
+        Http::assertNothingSent();
+        $this->assertSame(0, DB::table('auth_attempts')->count());
+    }
+
+    public function test_recovery_trims_the_submitted_phone_consistently_with_registration(): void
+    {
+        $user = $this->user();
+        $attempt = $this->forgot(' AMINA@EXAMPLE.COM ', ' +201012345678 ');
+        $this->send($attempt)->assertStatus(202);
+        $this->work();
+        Http::assertSent(fn ($request) => str_ends_with($request->url(), '/otp') && $request['to'] === $user->phone_number);
+    }
+
+    public function test_unknown_unverified_and_changed_accounts_cannot_start_recovery(): void
     {
         $this->user('unverified@example.com', false);
         $changed = $this->user('changed@example.com');
         DB::table('users')->where('id', $changed->id)->update(['phone_number' => '+15551234567']);
         foreach (['unknown@example.com', 'unverified@example.com', 'changed@example.com'] as $email) {
-            $attempt = $this->forgot($email);
-            $this->send($attempt)->assertStatus(202);
-            $this->work();
-            $this->verify($attempt)->assertStatus(422)->assertJsonPath('code', 'invalid-code');
+            $this->postJson('/api/auth/password/forgot', ['email' => $email, 'phone_number' => '+201012345678'])
+                ->assertStatus(422)->assertJsonPath('code', 'recovery-not-eligible');
         }
-        Http::assertNotSent(fn ($request) => str_ends_with($request->url(), '/otp'));
-        $this->assertSame(0, DB::table('personal_access_tokens')->count());
+        $this->assertSame(0, DB::table('auth_attempts')->count());
+        Http::assertNothingSent();
     }
 
     public function test_success_consumes_proof_updates_password_revokes_every_token_and_never_logs_in(): void
@@ -94,11 +151,11 @@ class PasswordRecoveryTest extends TestCase
         $this->assertSame(0, DB::table('sessions')->count());
     }
 
-    public function test_invalid_code_and_attempt_limit_are_identical_for_real_and_unknown_accounts(): void
+    public function test_invalid_code_exhausts_attempt_budget_without_creating_a_session(): void
     {
         $this->user();
         $this->provider(false);
-        foreach (['amina@example.com', 'unknown@example.com'] as $email) {
+        foreach (['amina@example.com'] as $email) {
             $attempt = $this->forgot($email);
             $this->send($attempt)->assertStatus(202);
             $this->work();
@@ -164,17 +221,19 @@ class PasswordRecoveryTest extends TestCase
         $this->assertNull(DB::table('auth_attempts')->value('proof_hash'));
     }
 
-    public function test_resend_cooldown_and_forgot_rate_limits_apply_without_account_enumeration(): void
+    public function test_resend_cooldown_and_forgot_rate_limits_are_preserved(): void
     {
-        $attempt = $this->forgot('unknown@example.com');
+        $this->user();
+        $attempt = $this->forgot();
         $this->send($attempt)->assertStatus(202);
         $this->send($attempt)->assertStatus(429);
+        $this->assertSame(1, DB::table('jobs')->count());
         $this->travel(61)->seconds();
         $this->send($attempt)->assertStatus(202);
         for ($i = 0; $i < 4; $i++) {
-            $this->forgot('unknown@example.com');
+            $this->forgot();
         }
-        $this->postJson('/api/auth/password/forgot', ['email' => ' UNKNOWN@EXAMPLE.COM '])->assertStatus(429);
+        $this->postJson('/api/auth/password/forgot', ['email' => ' AMINA@EXAMPLE.COM ', 'phone_number' => '+201012345678'])->assertStatus(429);
         $this->assertSame(2, DB::table('jobs')->count());
     }
 
@@ -270,9 +329,9 @@ class PasswordRecoveryTest extends TestCase
         return $user;
     }
 
-    private function forgot(string $email = 'amina@example.com'): array
+    private function forgot(string $email = 'amina@example.com', string $phone = '+201012345678'): array
     {
-        $result = $this->postJson('/api/auth/password/forgot', ['email' => $email])->assertStatus(202);
+        $result = $this->postJson('/api/auth/password/forgot', ['email' => $email, 'phone_number' => $phone])->assertStatus(202);
 
         return ['attempt_id' => $result->json('data.attempt_id'), 'attempt_token' => $result->json('data.attempt_token')];
     }

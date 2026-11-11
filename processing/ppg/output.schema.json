@@ -1,0 +1,54 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:sanad:ppg:window:1.0",
+  "title": "SANAD offline PPG processing window v1.0",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "processor_version", "recording_id", "window_index", "window_start_s", "window_end_s", "time_basis", "analysis_start_s", "analysis_end_s", "processing_fs_hz", "status", "reasons", "hr_bpm", "quality", "ecg_reference", "red_ir_features", "spo2_percent"],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "processor_version": {"type": "string"},
+    "recording_id": {"type": "string"},
+    "window_index": {"type": "integer", "minimum": 0},
+    "window_start_s": {"type": "number"},
+    "window_end_s": {"type": "number"},
+    "analysis_start_s": {"type": "number"},
+    "analysis_end_s": {"type": "number"},
+    "time_basis": {"const": "recording_seconds"},
+    "processing_fs_hz": {"type": "number", "minimum": 64},
+    "status": {"enum": ["ok", "rejected"]},
+    "reasons": {"type": "array", "items": {"type": "string"}},
+    "hr_bpm": {"type": ["number", "null"]},
+    "quality": {"type": "object", "description": "Engineering diagnostics, not a calibrated clinical probability."},
+    "ecg_reference": {
+      "type": "object", "required": ["status", "hr_bpm", "reasons", "quality"],
+      "properties": {
+        "status": {"enum": ["ok", "rejected"]},
+        "hr_bpm": {"type": ["number", "null"]},
+        "reasons": {"type": "array", "items": {"type": "string"}},
+        "quality": {"type": "object"},
+        "r_peaks_s": {"type": "array", "items": {"type": "number"}, "description": "Offsets in seconds from this window start, not absolute acquisition times."}
+      },
+      "additionalProperties": false,
+      "description": "Derived, dual-detector-cross-checked ECG HR, not annotated or clinical ground truth. Independent from PPG quality."
+    },
+    "red_ir_features": {
+      "type": "object", "required": ["status", "reasons", "calibrated"],
+      "properties": {
+        "status": {"enum": ["exploratory", "unavailable"]},
+        "reasons": {"type": "array", "items": {"type": "string"}},
+        "calibrated": {"const": false},
+        "red_dc": {"type": ["number", "null"]}, "ir_dc": {"type": ["number", "null"]},
+        "red_ac_rms": {"type": ["number", "null"]}, "ir_ac_rms": {"type": ["number", "null"]},
+        "red_ac_dc": {"type": ["number", "null"]}, "ir_ac_dc": {"type": ["number", "null"]},
+        "ratio_of_ratios": {"type": ["number", "null"]}
+      }, "additionalProperties": false
+    },
+    "spo2_percent": {"type": "null", "description": "Always null; no SpO2 estimator or calibration is implemented."},
+    "dataset_reference_spo2_percent_median": {"type": ["number", "null"], "description": "Optional adapter-only median of supplied pulse-oximeter reference values; never a processor prediction."}
+  },
+  "allOf": [
+    {"if": {"properties": {"status": {"const": "ok"}}}, "then": {"properties": {"hr_bpm": {"type": "number"}, "reasons": {"maxItems": 0}}}},
+    {"if": {"properties": {"status": {"const": "rejected"}}}, "then": {"properties": {"hr_bpm": {"type": "null"}, "reasons": {"minItems": 1}}}}
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "development": {
+    "windows": 16,
+    "ecg_event_agreement_min": 1.0,
+    "ecg_event_agreement_mean": 1.0,
+    "primary_ecg_peak_count": 579,
+    "alternate_ecg_peak_count": 579,
+    "metrics_independently_recomputed": true
+  },
+  "evaluation": {
+    "windows": 31,
+    "ecg_event_agreement_min": 1.0,
+    "ecg_event_agreement_mean": 1.0,
+    "primary_ecg_peak_count": 1108,
+    "alternate_ecg_peak_count": 1108,
+    "metrics_independently_recomputed": true
+  },
+  "all_12_original_checksums_unchanged": true
+}

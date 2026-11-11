@@ -1,0 +1,21 @@
+$kind: collection
+description: "Server-owned OTP. Select a private local environment; secrets remain blank in this artifact. Do not run blindly: send makes real WhatsApp requests once configured. No mock flag exists."
+variables:
+  base_url: http://127.0.0.1:8000
+  email: amina@example.com
+  username: Amina_1
+  password: ""
+  role: patient
+  phone_number: ""
+  attempt_id: ""
+  attempt_token: ""
+  purpose: signup
+  otp_code: ""
+  verification_proof: ""
+  auth_token: ""
+scripts:
+  - type: http:beforeRequest
+    code: |-
+      const base = pm.variables.get("base_url") || "";
+      if (!/^https?:\/\/(127\.0\.0\.1|localhost|\[::1\])(:\d+)?$/.test(base)) { throw new Error("SANAD collection is restricted to local loopback hosts."); }
+    language: text/javascript

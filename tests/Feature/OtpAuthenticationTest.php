@@ -72,6 +72,23 @@ class OtpAuthenticationTest extends TestCase
         $this->withToken($token)->getJson('/api/user')->assertUnauthorized();
     }
 
+    public function test_login_returns_only_calling_code_and_last_four_phone_digits_after_valid_credentials(): void
+    {
+        $this->withoutMiddleware(\Illuminate\Routing\Middleware\ThrottleRequests::class);
+        $user = $this->user();
+        foreach (['+20', '+966', '+971', '+965', '+974', '+968', '+973', '+962', '+1', '+44'] as $callingCode) {
+            $user->forceFill(['phone_number' => $callingCode.'1234567890'])->save();
+            $response = $this->postJson('/api/auth/login/start', ['email' => $user->email, 'password' => 'ValidPass1!']);
+            $response->assertCreated()->assertJsonPath('data.masked_phone_number', $callingCode.' •••••• 7890');
+            $this->assertStringNotContainsString($user->phone_number, $response->getContent());
+            $this->assertArrayNotHasKey('token', $response->json('data'));
+        }
+        $this->assertSame(0, DB::table('personal_access_tokens')->count());
+        $this->postJson('/api/auth/login/start', ['email' => $user->email, 'password' => 'wrong'])
+            ->assertUnauthorized()->assertJsonMissingPath('data.masked_phone_number');
+        Http::assertNothingSent();
+    }
+
     public function test_invalid_codes_exhaust_the_budget_and_cannot_mint_tokens(): void
     {
         $this->fakeProvider(false);

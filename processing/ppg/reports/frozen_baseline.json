@@ -1,0 +1,24 @@
+{
+  "config": {
+    "fs": 100.0,
+    "window_s": 30.0,
+    "edge_s": 2.0,
+    "min_bpm": 40.0,
+    "max_bpm": 180.0,
+    "max_rr_cv": 0.2,
+    "min_autocorrelation": 0.4,
+    "min_spectral_concentration": 0.45,
+    "max_spectral_difference_bpm": 12.0
+  },
+  "code_sha256": "c7eb2d7b2807c35b4e4e614118ddfaf30f325eb7eaadf5afae7866f452faf378",
+  "development_sessions": [
+    0,
+    1
+  ],
+  "evaluation_sessions": [
+    2,
+    3,
+    4,
+    5
+  ]
+}

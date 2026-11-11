@@ -1,0 +1,14 @@
+$kind: http-request
+url: "{{base_url}}/api/auth/availability/email"
+method: POST
+headers:
+  Accept: application/json
+  Content-Type: application/json
+body:
+  type: json
+  content: "{\r
+
+    \    \"email\":  \"{{email}}\"\r
+
+    }"
+order: 2000

@@ -1,0 +1,386 @@
+[
+  {
+    "session": 0,
+    "channel": "Green",
+    "window": 0,
+    "baseline_status": "rejected",
+    "central_filter_context_nrmse": 0.0004461977025193511,
+    "central_filter_context_correlation": 0.9999999022903973
+  },
+  {
+    "session": 0,
+    "channel": "Green",
+    "window": 1,
+    "baseline_status": "ok",
+    "central_filter_context_nrmse": 0.08248298903899463,
+    "central_filter_context_correlation": 0.9966463491168667
+  },
+  {
+    "session": 0,
+    "channel": "Green",
+    "window": 2,
+    "baseline_status": "ok",
+    "central_filter_context_nrmse": 0.009636317923685443,
+    "central_filter_context_correlation": 0.9999538985268197
+  },
+  {
+    "session": 0,
+    "channel": "Green",
+    "window": 3,
+    "baseline_status": "ok",
+    "central_filter_context_nrmse": 0.021232160854260124,
+    "central_filter_context_correlation": 0.9997762551070292
+  },
+  {
+    "session": 0,
+    "channel": "Green",
+    "window": 4,
+    "baseline_status": "ok",
+    "central_filter_context_nrmse": 0.010888481142653231,
+    "central_filter_context_correlation": 0.9999408429814086
+  },
+  {
+    "session": 0,
+    "channel": "Green",
+    "window": 5,
+    "baseline_status": "ok",
+    "central_filter_context_nrmse": 0.01488963356878487,
+    "central_filter_context_correlation": 0.9998911004933367
+  },
+  {
+    "session": 0,
+    "channel": "Green",
+    "window": 6,
+    "baseline_status": "ok",
+    "central_filter_context_nrmse": 0.009689564252323547,
+    "central_filter_context_correlation": 0.9999541296436878
+  },
+  {
+    "session": 0,
+    "channel": "Green",
+    "window": 7,
+    "baseline_status": "ok",
+    "central_filter_context_nrmse": 0.0035132298769432625,
+    "central_filter_context_correlation": 0.9999938428961974
+  },
+  {
+    "session": 0,
+    "channel": "Red",
+    "window": 0,
+    "baseline_status": "rejected",
+    "central_filter_context_nrmse": 0.00037416560908614776,
+    "central_filter_context_correlation": 0.9999999310226377
+  },
+  {
+    "session": 0,
+    "channel": "Red",
+    "window": 1,
+    "baseline_status": "rejected",
+    "central_filter_context_nrmse": 0.2324423779990701,
+    "central_filter_context_correlation": 0.9731749979732518
+  },
+  {
+    "session": 0,
+    "channel": "Red",
+    "window": 2,
+    "baseline_status": "rejected",
+    "central_filter_context_nrmse": 0.021868776589446436,
+    "central_filter_context_correlation": 0.9997634750393818
+  },
+  {
+    "session": 0,
+    "channel": "Red",
+    "window": 3,
+    "baseline_status": "rejected",
+    "central_filter_context_nrmse": 0.03892882101753617,
+    "central_filter_context_correlation": 0.9992460544001837
+  },
+  {
+    "session": 0,
+    "channel": "Red",
+    "window": 4,
+    "baseline_status": "rejected",
+    "central_filter_context_nrmse": 0.03927005544244858,
+    "central_filter_context_correlation": 0.999232480217552
+  },
+  {
+    "session": 0,
+    "channel": "Red",
+    "window": 5,
+    "baseline_status": "rejected",
+    "central_filter_context_nrmse": 0.021551116838989165,
+    "central_filter_context_correlation": 0.9997696046160683
+  },
+  {
+    "session": 0,
+    "channel": "Red",
+    "window": 6,
+    "baseline_status": "rejected",
+    "central_filter_context_nrmse": 0.030088991307241287,
+    "central_filter_context_correlation": 0.9995514590683129
+  },
+  {
+    "session": 0,
+    "channel": "Red",
+    "window": 7,
+    "baseline_status": "rejected",
+    "central_filter_context_nrmse": 0.04340586565618331,
+    "central_filter_context_correlation": 0.999094500074757
+  },
+  {
+    "session": 0,
+    "channel": "IR",
+    "window": 0,
+    "baseline_status": "rejected",
+    "central_filter_context_nrmse": 0.0004344129075211964,
+    "central_filter_context_correlation": 0.9999999070299985
+  },
+  {
+    "session": 0,
+    "channel": "IR",
+    "window": 1,
+    "baseline_status": "rejected",
+    "central_filter_context_nrmse": 0.11680894226807746,
+    "central_filter_context_correlation": 0.993368755148557
+  },
+  {
+    "session": 0,
+    "channel": "IR",
+    "window": 2,
+    "baseline_status": "rejected",
+    "central_filter_context_nrmse": 0.028236228133890408,
+    "central_filter_context_correlation": 0.9996053055515138
+  },
+  {
+    "session": 0,
+    "channel": "IR",
+    "window": 3,
+    "baseline_status": "rejected",
+    "central_filter_context_nrmse": 0.017494267913946895,
+    "central_filter_context_correlation": 0.9998500397625554
+  },
+  {
+    "session": 0,
+    "channel": "IR",
+    "window": 4,
+    "baseline_status": "rejected",
+    "central_filter_context_nrmse": 0.02654789819681311,
+    "central_filter_context_correlation": 0.9996482571715022
+  },
+  {
+    "session": 0,
+    "channel": "IR",
+    "window": 5,
+    "baseline_status": "rejected",
+    "central_filter_context_nrmse": 0.023928085536762057,
+    "central_filter_context_correlation": 0.9997141244671699
+  },
+  {
+    "session": 0,
+    "channel": "IR",
+    "window": 6,
+    "baseline_status": "rejected",
+    "central_filter_context_nrmse": 0.0485477290821874,
+    "central_filter_context_correlation": 0.9988576898034871
+  },
+  {
+    "session": 0,
+    "channel": "IR",
+    "window": 7,
+    "baseline_status": "rejected",
+    "central_filter_context_nrmse": 0.017543669051991697,
+    "central_filter_context_correlation": 0.9998479153854548
+  },
+  {
+    "session": 1,
+    "channel": "Green",
+    "window": 0,
+    "baseline_status": "ok",
+    "central_filter_context_nrmse": 0.007236428830082147,
+    "central_filter_context_correlation": 0.9999738605467493
+  },
+  {
+    "session": 1,
+    "channel": "Green",
+    "window": 1,
+    "baseline_status": "rejected",
+    "central_filter_context_nrmse": 0.011851742425027232,
+    "central_filter_context_correlation": 0.9999306415833829
+  },
+  {
+    "session": 1,
+    "channel": "Green",
+    "window": 2,
+    "baseline_status": "rejected",
+    "central_filter_context_nrmse": 0.00746027947397562,
+    "central_filter_context_correlation": 0.9999723101827109
+  },
+  {
+    "session": 1,
+    "channel": "Green",
+    "window": 3,
+    "baseline_status": "rejected",
+    "central_filter_context_nrmse": 0.021280909921130655,
+    "central_filter_context_correlation": 0.9998012733406151
+  },
+  {
+    "session": 1,
+    "channel": "Green",
+    "window": 4,
+    "baseline_status": "rejected",
+    "central_filter_context_nrmse": 0.0202579639965924,
+    "central_filter_context_correlation": 0.9997976182130363
+  },
+  {
+    "session": 1,
+    "channel": "Green",
+    "window": 5,
+    "baseline_status": "ok",
+    "central_filter_context_nrmse": 0.006165524071058423,
+    "central_filter_context_correlation": 0.999980993602403
+  },
+  {
+    "session": 1,
+    "channel": "Green",
+    "window": 6,
+    "baseline_status": "ok",
+    "central_filter_context_nrmse": 0.0395802044609513,
+    "central_filter_context_correlation": 0.99922570710697
+  },
+  {
+    "session": 1,
+    "channel": "Green",
+    "window": 7,
+    "baseline_status": "ok",
+    "central_filter_context_nrmse": 0.015572514487184141,
+    "central_filter_context_correlation": 0.9998794323597913
+  },
+  {
+    "session": 1,
+    "channel": "Red",
+    "window": 0,
+    "baseline_status": "rejected",
+    "central_filter_context_nrmse": 0.019274926434104528,
+    "central_filter_context_correlation": 0.9998172338300678
+  },
+  {
+    "session": 1,
+    "channel": "Red",
+    "window": 1,
+    "baseline_status": "rejected",
+    "central_filter_context_nrmse": 0.014545602997816457,
+    "central_filter_context_correlation": 0.9998951478578462
+  },
+  {
+    "session": 1,
+    "channel": "Red",
+    "window": 2,
+    "baseline_status": "rejected",
+    "central_filter_context_nrmse": 0.009314867936823772,
+    "central_filter_context_correlation": 0.9999568867152339
+  },
+  {
+    "session": 1,
+    "channel": "Red",
+    "window": 3,
+    "baseline_status": "rejected",
+    "central_filter_context_nrmse": 0.031136929942344193,
+    "central_filter_context_correlation": 0.9995582221420387
+  },
+  {
+    "session": 1,
+    "channel": "Red",
+    "window": 4,
+    "baseline_status": "rejected",
+    "central_filter_context_nrmse": 0.024275833333298566,
+    "central_filter_context_correlation": 0.9997065529126236
+  },
+  {
+    "session": 1,
+    "channel": "Red",
+    "window": 5,
+    "baseline_status": "rejected",
+    "central_filter_context_nrmse": 0.016628064131849276,
+    "central_filter_context_correlation": 0.9998641606368318
+  },
+  {
+    "session": 1,
+    "channel": "Red",
+    "window": 6,
+    "baseline_status": "rejected",
+    "central_filter_context_nrmse": 0.0583393721746537,
+    "central_filter_context_correlation": 0.9983186326424246
+  },
+  {
+    "session": 1,
+    "channel": "Red",
+    "window": 7,
+    "baseline_status": "rejected",
+    "central_filter_context_nrmse": 0.01834363833553102,
+    "central_filter_context_correlation": 0.9998322186592971
+  },
+  {
+    "session": 1,
+    "channel": "IR",
+    "window": 0,
+    "baseline_status": "rejected",
+    "central_filter_context_nrmse": 0.035445584193136,
+    "central_filter_context_correlation": 0.999384396141438
+  },
+  {
+    "session": 1,
+    "channel": "IR",
+    "window": 1,
+    "baseline_status": "rejected",
+    "central_filter_context_nrmse": 0.0051430765256874,
+    "central_filter_context_correlation": 0.9999870342873003
+  },
+  {
+    "session": 1,
+    "channel": "IR",
+    "window": 2,
+    "baseline_status": "rejected",
+    "central_filter_context_nrmse": 0.023839567929165046,
+    "central_filter_context_correlation": 0.9997162567277555
+  },
+  {
+    "session": 1,
+    "channel": "IR",
+    "window": 3,
+    "baseline_status": "rejected",
+    "central_filter_context_nrmse": 0.020901297220144027,
+    "central_filter_context_correlation": 0.9997865128241632
+  },
+  {
+    "session": 1,
+    "channel": "IR",
+    "window": 4,
+    "baseline_status": "rejected",
+    "central_filter_context_nrmse": 0.01739747715224887,
+    "central_filter_context_correlation": 0.9998495874423229
+  },
+  {
+    "session": 1,
+    "channel": "IR",
+    "window": 5,
+    "baseline_status": "rejected",
+    "central_filter_context_nrmse": 0.027913484125605154,
+    "central_filter_context_correlation": 0.999615957020212
+  },
+  {
+    "session": 1,
+    "channel": "IR",
+    "window": 6,
+    "baseline_status": "rejected",
+    "central_filter_context_nrmse": 0.010687838942540438,
+    "central_filter_context_correlation": 0.9999439923588048
+  },
+  {
+    "session": 1,
+    "channel": "IR",
+    "window": 7,
+    "baseline_status": "rejected",
+    "central_filter_context_nrmse": 0.003939549369031471,
+    "central_filter_context_correlation": 0.9999923806258545
+  }
+]

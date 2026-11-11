@@ -26,3 +26,10 @@ _ide_helper.php
 Homestead.json
 Homestead.yaml
 Thumbs.db
+
+# Local WF-PPG recordings (never commit or duplicate the supplied dataset).
+/datasets/WF-PPG/
+/processing/ppg/.venv/
+/processing/ppg/**/__pycache__/
+/processing/ppg/.pytest_cache/
+/processing/ppg/*.egg-info/

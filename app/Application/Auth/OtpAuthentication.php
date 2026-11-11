@@ -8,6 +8,7 @@ use App\Http\Resources\UserResource;
 use App\Models\AuthAttempt;
 use App\Models\User;
 use App\Rules\UniqueUserIdentity;
+use App\Support\MaskedPhoneNumber;
 use Carbon\CarbonImmutable;
 use Illuminate\Database\QueryException;
 use Illuminate\Database\UniqueConstraintViolationException;
@@ -60,8 +61,13 @@ final class OtpAuthentication
             throw new AuthFlowException('otp-service-unavailable', 503);
         }
 
-        return ['attempt_id' => $attempt->id, 'attempt_token' => $secret, 'purpose' => $purpose,
+        $response = ['attempt_id' => $attempt->id, 'attempt_token' => $secret, 'purpose' => $purpose,
             'otp_started' => false, 'authenticated' => false, 'expires_at' => $attempt->expires_at->toISOString()];
+        if ($purpose === 'login') {
+            $response['masked_phone_number'] = MaskedPhoneNumber::fromInternational($payload['phone_number']);
+        }
+
+        return $response;
     }
 
     public function send(#[\SensitiveParameter] array $input): array

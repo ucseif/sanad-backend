@@ -1,0 +1,8 @@
+$kind: http-request
+url: "{{base_url}}/api/user"
+method: GET
+headers:
+  Accept: application/json
+  Content-Type: application/json
+  Authorization: Bearer {{auth_token}}
+order: 11000

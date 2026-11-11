@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthPreparationController;
+use App\Http\Controllers\CaregiverLinkController;
 use App\Http\Controllers\OtpAuthenticationController;
 use App\Http\Controllers\PasswordRecoveryController;
 use App\Http\Resources\UserResource;
@@ -14,6 +15,7 @@ Route::get('/user', function (Request $request) {
 })->middleware('auth:sanctum');
 
 Route::prefix('auth')->group(function (): void {
+    Route::post('/password/eligibility', [PasswordRecoveryController::class, 'eligibility'])->middleware('throttle:auth-recovery');
     Route::post('/password/forgot', [PasswordRecoveryController::class, 'forgot'])->middleware('throttle:auth-recovery');
     Route::post('/password/otp/send', [PasswordRecoveryController::class, 'send'])->middleware('throttle:auth-otp-send');
     Route::post('/password/otp/verify', [PasswordRecoveryController::class, 'verify'])->middleware('throttle:auth-otp-verify');
@@ -31,6 +33,14 @@ Route::prefix('auth')->group(function (): void {
 });
 
 // SANAD API Health Check
+Route::middleware('auth:sanctum')->group(function (): void {
+    Route::post('/caregivers/lookup', [CaregiverLinkController::class, 'lookup'])->name('caregiver-links.lookup')->middleware('throttle:caregiver-lookup');
+    Route::get('/caregiver-links', [CaregiverLinkController::class, 'index'])->name('caregiver-links.index')->middleware('throttle:caregiver-read');
+    Route::post('/caregiver-links', [CaregiverLinkController::class, 'store'])->name('caregiver-links.store')->middleware('throttle:caregiver-write');
+    Route::post('/caregiver-links/{id}/{action}', [CaregiverLinkController::class, 'transition'])
+        ->whereIn('action', ['accept', 'decline', 'cancel', 'revoke'])->name('caregiver-links.transition')->middleware('throttle:caregiver-write');
+});
+
 Route::get('/health', function () {
     return response()->json([
         'success' => true,

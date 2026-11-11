@@ -1,12 +1,12 @@
 # Password recovery — local backend
 
-Recovery is independent of signup/login and never creates a session, cookie or Sanctum token. Existing signup/login response contracts are preserved. Flutter is unchanged.
+Recovery is independent of signup/login and never creates a session, cookie or Sanctum token. Flutter uses its own recovery phone screen/state, a four-step recovery header, the existing shared OTP screen and the existing reset form. Signup no longer contains recovery-specific branching. Login preparation's previously added masked phone response remains unchanged.
 
 ## Database and worker prerequisites
 
 New migration: `2026_11_07_000002_add_password_recovery_support.php`. **Not applied to sanad_db by this implementation.** Review and apply separately before running the updated application. It widens the attempt purpose, adds `password_reset` to the checks, adds a delivery-generation counter and nullable `users.phone_verified_at` / `phone_verified_hash`. It does not backfill or update accounts. Rollback refuses to erase recovery attempts.
 
-Successful server OTP signup/login now records verified-phone evidence. Recovery requires that evidence to match the current stored phone. A retained, completed, server-verified login attempt matching the user and current phone also qualifies. Legacy accounts without either form of evidence receive the same neutral response but no delivery; they must first complete the existing verified login flow or undergo separately designed trusted remediation. Merely storing a phone, client assertions, or historical signup payloads do not prove ownership. No automatic verification backfill is performed.
+Successful server OTP signup/login records verified-phone evidence. Recovery requires that evidence to match the current stored phone. A retained, completed, server-verified login attempt matching the user and current phone also qualifies. Legacy accounts without either form of evidence fail the eligibility check; no status or remediation metadata is returned. Merely storing a phone, client assertions, or historical signup payloads do not prove ownership. No automatic verification backfill is performed.
 
 Delivery uses the existing database queue, explicitly `database`, queue `auth-recovery`. Its connection must equal the application default connection or sending fails closed. Run locally after the separately approved migration:
 
@@ -20,19 +20,23 @@ Queue messages contain only an attempt UUID and delivery generation. Queue inser
 
 Import `postman/SANAD-password-recovery.postman_collection.json`. Set `base_url` to your local Laravel origin (default `http://127.0.0.1:8000`). Use JSON `Accept` and `Content-Type` headers; no Bearer token is required. The collection rejects non-loopback destinations. Enter the actual code received on the account's verified WhatsApp phone manually into the temporary `otp_code` variable. Never commit populated secrets or export them.
 
-All successes use `{ "code": "...", "data": { ... } }`, no-store response headers, and `authenticated: false`. Input errors use the existing `validation-failed`, `errors` and `error_codes` contract. Password and confirmation are never trimmed. Identity normalization matches the PostgreSQL lower/trim unique index and existing Unicode input trimming.
+All successes use `{ "code": "...", "data": { ... } }` and no-store response headers. Start/send/verify/reset responses include `authenticated: false`; eligibility exposes only its boolean result. Input errors use the existing `validation-failed`, `errors` and `error_codes` contract. Password and confirmation are never trimmed. Identity normalization matches the PostgreSQL lower/trim unique index and existing Unicode input trimming.
+
+0. `POST /api/auth/password/eligibility`
+
+   Request: `{ "email": "amina@example.com" }`. Response: `{ "code": "recovery-eligibility-checked", "data": { "eligible": true } }` (or `false`). This is an explicit recovery eligibility check, not registration availability. It creates no attempt, job or session and sends no message. It returns no phone, role, account ID or verification metadata. It uses the same `auth-recovery` limiter as `/forgot`: 20/min/IP and 5/15min/normalized email+IP across both endpoints together, plus the 200 ms floor. Flutter must check the response code and actual boolean, not HTTP success alone.
 
 1. `POST /api/auth/password/forgot`
 
-   Request: `{ "email": "amina@example.com", "language": "en" }` (`language` optional `ar`/`en`).
+   Request: `{ "email": "amina@example.com", "phone_number": "+201012345678", "language": "en" }` (`language` optional `ar`/`en`). Phone is required and trimmed consistently with registration, then validated in canonical `+` plus 7–15 digits format. Flutter constructs it using the existing country picker and phone normalization.
 
-   Always 202 for syntactically valid eligible, unknown or unverified identities: `{ "code": "password-recovery-started", "data": { "attempt_id": "<uuid>", "attempt_token": "<64-hex-secret>", "purpose": "password_reset", "expires_at": "<ISO-8601>", "authenticated": false } }`. No phone/profile information or delivery claim. Minimum processing time 200 ms. Limit 20/min/IP and 5/15min/normalized email+IP.
+   Only a matching eligible pair returns 202: `{ "code": "password-recovery-started", "data": { "attempt_id": "<uuid>", "attempt_token": "<64-hex-secret>", "purpose": "password_reset", "expires_at": "<ISO-8601>", "authenticated": false, "recovery_confirmed": true } }`. Unknown, unverified or mismatched pairs return generic 422 `recovery-not-eligible` before creating an attempt or job. New decoy attempts are no longer created. No stored phone/profile information is returned. Flutter requires the explicit confirmation and purpose, then requests the first send before opening OTP. Minimum processing time 200 ms; recovery throttle shared with eligibility.
 
 2. `POST /api/auth/password/otp/send`
 
    Request: `{ "attempt_id": "<uuid>", "attempt_token": "<secret>" }`.
 
-   202: `{ "code": "recovery-request-accepted", "data": { "attempt_id": "<uuid>", "authenticated": false, "resend_at": "<ISO-8601>" } }`. This accepts queued processing, not delivery. Any supplied phone/email is ignored; delivery can only use the server-bound stored verified phone. Unknown identities use decoy attempts with identical limits. Limit 10/min/IP, 3 sends/attempt and 60-second cooldown. The worker also enforces shared phone limits (3/15min and cooldown) across signup/login/recovery under PostgreSQL advisory locks.
+   202: `{ "code": "recovery-request-accepted", "data": { "attempt_id": "<uuid>", "authenticated": false, "recovery_confirmed": true, "resend_at": "<ISO-8601>" } }`. Account eligibility and binding are rechecked before reservation. This accepts queued processing, not confirmed delivery. Any supplied phone/email is ignored; delivery can only use the server-bound stored verified phone. Limit 10/min/IP, 3 sends/attempt and 60-second cooldown. The worker also enforces shared phone limits (3/15min and cooldown) across signup/login/recovery under PostgreSQL advisory locks. Flutter passes the acknowledged resend time into OTP to suppress another send on entry; uncertain network retries retain the same attempt and are subject to server cooldown.
 
 3. `POST /api/auth/password/otp/verify`
 
@@ -51,6 +55,8 @@ All successes use `{ "code": "...", "data": { ... } }`, no-store response header
    Password policy is the existing SignupPassword rule: at least 9 Dart UTF-16 units, ASCII upper/lower/digit and an allowed punctuation character, plus exact confirmation. Bcrypt inputs over 72 bytes fail safely as `weak-password`. Hashing uses the configured Laravel hasher.
 
 ## Security and errors
+
+- **Intentional enumeration tradeoff:** explicit eligibility and pair-rejection outcomes permit probing whether account details qualify for recovery. This replaces the previous neutral-decoy navigation contract at the user's request. Generic localized messages, no registered-phone/profile disclosure, shared throttles and timeboxing reduce exposure but do not eliminate account or phone-pair enumeration. Neither eligibility nor a `recovery_confirmed` acknowledgement authorizes reset; a live server-verified single-use proof is still mandatory.
 
 - Attempts expire in 600 seconds. Proof expires after at most 300 seconds and never outlives the attempt. Only hashes of attempt secrets/proofs are stored; payload/provider ID use existing encrypted casts.
 - Attempt and user row locks serialize completion. Proofs bind purpose, challenge, account and the password/phone snapshot. Changed credentials or phone invalidate pending recovery. Concurrent completions succeed once. Existing login attempts are invalidated by the changed password binding.

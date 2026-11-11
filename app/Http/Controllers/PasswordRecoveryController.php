@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Application\Auth\PasswordRecovery;
 use App\Http\Requests\ForgotPasswordRequest;
+use App\Http\Requests\EmailInputRequest;
 use App\Http\Requests\OtpAttemptRequest;
 use App\Http\Requests\ResetPasswordRequest;
 use App\Http\Requests\VerifyRecoveryOtpRequest;
@@ -11,6 +12,11 @@ use App\Support\AuthApiResponse;
 
 class PasswordRecoveryController extends Controller
 {
+    public function eligibility(EmailInputRequest $request, PasswordRecovery $flow)
+    {
+        return AuthApiResponse::success('recovery-eligibility-checked', $flow->emailEligibility($request->validated()));
+    }
+
     public function forgot(ForgotPasswordRequest $request, PasswordRecovery $flow)
     {
         return AuthApiResponse::success('password-recovery-started', $flow->forgot($request->validated()))->setStatusCode(202);

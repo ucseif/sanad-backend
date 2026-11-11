@@ -4,10 +4,15 @@ namespace App\Providers;
 
 use App\Application\Auth\OtpProvider;
 use App\Infrastructure\Auth\WexoraOtpProvider;
+use App\Models\CaregiverLink;
+use App\Models\User;
+use App\Policies\CaregiverLinkPolicy;
+use App\Policies\PatientDataPolicy;
 use App\Support\AuthApiResponse;
 use App\Support\UserInput;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 
@@ -26,11 +31,22 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        Gate::policy(CaregiverLink::class, CaregiverLinkPolicy::class);
+        Gate::define('view-linked-patient', fn (User $actor, User $patient) => app(PatientDataPolicy::class)->view($actor, $patient));
         $limited = fn (Request $request, array $headers) => AuthApiResponse::error(
             'too-many-requests', 429, 'Too many requests. Please try again later.',
         )->withHeaders($headers);
 
         RateLimiter::for('auth-availability', fn (Request $request) => Limit::perMinute(30)->by('ip|'.$request->ip())->response($limited));
+        RateLimiter::for('caregiver-lookup', fn (Request $request) => [
+            Limit::perMinute(10)->by('caregiver-lookup-user|'.$request->user()->id)->response($limited),
+            Limit::perMinute(30)->by('caregiver-lookup-ip|'.$request->ip())->response($limited),
+        ]);
+        RateLimiter::for('caregiver-write', fn (Request $request) => [
+            Limit::perMinute(20)->by('caregiver-write-user|'.$request->user()->id)->response($limited),
+            Limit::perMinute(60)->by('caregiver-write-ip|'.$request->ip())->response($limited),
+        ]);
+        RateLimiter::for('caregiver-read', fn (Request $request) => Limit::perMinute(60)->by('caregiver-read-user|'.$request->user()->id)->response($limited));
         RateLimiter::for('auth-registration', fn (Request $request) => Limit::perMinute(5)->by('ip|'.$request->ip())->response($limited));
         RateLimiter::for('auth-otp-send', fn (Request $request) => Limit::perMinute(10)->by('ip|'.$request->ip())->response($limited));
         RateLimiter::for('auth-otp-verify', fn (Request $request) => Limit::perMinute(20)->by('ip|'.$request->ip())->response($limited));

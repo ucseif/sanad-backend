@@ -1,0 +1,12 @@
+$kind: http-request
+url: "{{base_url}}/api/auth/logout"
+method: POST
+headers:
+  Accept: application/json
+  Content-Type: application/json
+  Authorization: Bearer {{auth_token}}
+scripts:
+  - type: afterResponse
+    code: if (pm.response.code === 204) { ["auth_token", "attempt_token", "verification_proof", "otp_code"].forEach(key => pm.environment.unset(key)); }
+    language: text/javascript
+order: 12000

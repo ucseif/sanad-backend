@@ -1,0 +1,13 @@
+{
+  "Green": {
+    "weak_or_distorted_waveform_evidence": 4,
+    "accepted": 11,
+    "mixed_or_unresolved": 1
+  },
+  "Red": {
+    "weak_or_distorted_waveform_evidence": 16
+  },
+  "IR": {
+    "weak_or_distorted_waveform_evidence": 16
+  }
+}

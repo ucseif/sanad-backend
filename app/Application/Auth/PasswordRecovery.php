@@ -19,6 +19,15 @@ final class PasswordRecovery
         return $this->database(fn () => $this->prepare($input));
     }
 
+    public function emailEligibility(#[\SensitiveParameter] array $input): array
+    {
+        return $this->database(fn () => (new Timebox)->call(function () use ($input) {
+            $user = User::whereRaw('lower(trim(email)) = lower(trim(?))', [$input['email']])->first();
+
+            return ['eligible' => $user && $this->eligible($user)];
+        }, 200000));
+    }
+
     public function send(#[\SensitiveParameter] array $input): array
     {
         return $this->database(fn () => $this->reserve($input));
@@ -47,20 +56,20 @@ final class PasswordRecovery
     {
         return (new Timebox)->call(function ($timebox) use ($input) {
             $user = User::whereRaw('lower(trim(email)) = lower(trim(?))', [$input['email']])->first();
-            if (! $user || ! $this->eligible($user)) {
-                $user = null;
+            if (! $user || ! $this->eligible($user) || ! hash_equals($user->phone_number, $input['phone_number'])) {
+                throw new AuthFlowException('recovery-not-eligible', 422);
             }
             $secret = bin2hex(random_bytes(32));
             $attempt = new AuthAttempt;
             $attempt->forceFill(['id' => (string) Str::uuid(), 'secret_hash' => hash('sha256', $secret),
-                'purpose' => 'password_reset', 'user_id' => $user?->id,
-                'phone_hash' => $user ? $this->auth->phoneHash($user->phone_number) : $this->auth->phoneHash('recovery|'.$input['email']),
-                'binding_hash' => $user ? $this->auth->binding($user) : null,
-                'payload' => ['phone_number' => $user?->phone_number, 'language' => $input['language'] ?? 'en'],
+                'purpose' => 'password_reset', 'user_id' => $user->id,
+                'phone_hash' => $this->auth->phoneHash($user->phone_number),
+                'binding_hash' => $this->auth->binding($user),
+                'payload' => ['phone_number' => $user->phone_number, 'language' => $input['language'] ?? 'en'],
                 'status' => 'pending', 'expires_at' => now()->addSeconds(config('auth_otp.attempt_seconds'))])->save();
 
             return ['attempt_id' => $attempt->id, 'attempt_token' => $secret, 'purpose' => 'password_reset',
-                'expires_at' => $attempt->expires_at->toISOString(), 'authenticated' => false];
+                'expires_at' => $attempt->expires_at->toISOString(), 'authenticated' => false, 'recovery_confirmed' => true];
         }, 200000);
     }
 
@@ -74,6 +83,9 @@ final class PasswordRecovery
         return DB::transaction(function () use ($input) {
             $attempt = $this->auth->lock($input, 'password_reset');
             $this->pending($attempt);
+            if (! $this->boundUser($attempt)) {
+                throw new AuthFlowException('recovery-not-eligible', 422);
+            }
             if ($attempt->send_count >= config('auth_otp.sends_per_attempt') ||
                 $attempt->last_sent_at?->addSeconds(config('auth_otp.cooldown_seconds'))->isFuture()) {
                 throw new AuthFlowException('too-many-requests', 429);
@@ -85,7 +97,7 @@ final class PasswordRecovery
                 'last_sent_at' => now(), 'provider_id' => null, 'provider_hash' => null, 'challenge_expires_at' => null])->save();
             DeliverRecoveryOtp::dispatch($attempt->id, $attempt->send_count)->onConnection('database')->onQueue('auth-recovery')->beforeCommit();
 
-            return ['attempt_id' => $attempt->id, 'authenticated' => false,
+            return ['attempt_id' => $attempt->id, 'authenticated' => false, 'recovery_confirmed' => true,
                 'resend_at' => $attempt->last_sent_at->addSeconds(config('auth_otp.cooldown_seconds'))->toISOString()];
         });
     }

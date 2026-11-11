@@ -1,0 +1,144 @@
+{
+  "split": "evaluation",
+  "subject": "03",
+  "config": {
+    "config": {
+      "fs": 100.0,
+      "window_s": 30.0,
+      "edge_s": 2.0,
+      "min_bpm": 40.0,
+      "max_bpm": 180.0,
+      "max_rr_cv": 0.2,
+      "min_autocorrelation": 0.4,
+      "min_spectral_concentration": 0.45,
+      "max_spectral_difference_bpm": 12.0
+    },
+    "code_sha256": "c7eb2d7b2807c35b4e4e614118ddfaf30f325eb7eaadf5afae7866f452faf378",
+    "development_sessions": [
+      0,
+      1
+    ],
+    "evaluation_sessions": [
+      2,
+      3,
+      4,
+      5
+    ]
+  },
+  "python": "3.14.3",
+  "numpy": "2.5.4",
+  "scipy": "1.18.1",
+  "aggregate": {
+    "total_windows": 31,
+    "ppg_accepted": 6,
+    "ppg_rejected": 25,
+    "ppg_coverage": 0.1935483870967742,
+    "valid_ecg_windows": 31,
+    "invalid_ecg_windows": 0,
+    "paired_windows": 6,
+    "paired_coverage_all": 0.1935483870967742,
+    "paired_coverage_valid_ecg": 0.1935483870967742,
+    "mae_bpm": 0.6388286821640013,
+    "rmse_bpm": 0.7182317323769332,
+    "bias_bpm": 0.2835992220280801,
+    "ppg_rejection_reasons": {
+      "low_periodicity": 21,
+      "irregular_pulse_intervals": 21,
+      "diffuse_spectrum": 6,
+      "peak_spectrum_disagreement": 5
+    },
+    "ecg_rejection_reasons": {}
+  },
+  "sessions": {
+    "2": {
+      "total_windows": 8,
+      "ppg_accepted": 1,
+      "ppg_rejected": 7,
+      "ppg_coverage": 0.125,
+      "valid_ecg_windows": 8,
+      "invalid_ecg_windows": 0,
+      "paired_windows": 1,
+      "paired_coverage_all": 0.125,
+      "paired_coverage_valid_ecg": 0.125,
+      "mae_bpm": 0.43964968334485377,
+      "rmse_bpm": 0.43964968334485377,
+      "bias_bpm": 0.43964968334485377,
+      "ppg_rejection_reasons": {
+        "low_periodicity": 6,
+        "irregular_pulse_intervals": 3,
+        "diffuse_spectrum": 2,
+        "peak_spectrum_disagreement": 2
+      },
+      "ecg_rejection_reasons": {},
+      "indices_rows": 169,
+      "source_sha256": "c4d00743de2536afe0a7bf80a4538d607d39a0e05ea9e072b2e651ff47f33807"
+    },
+    "3": {
+      "total_windows": 7,
+      "ppg_accepted": 4,
+      "ppg_rejected": 3,
+      "ppg_coverage": 0.5714285714285714,
+      "valid_ecg_windows": 7,
+      "invalid_ecg_windows": 0,
+      "paired_windows": 4,
+      "paired_coverage_all": 0.5714285714285714,
+      "paired_coverage_valid_ecg": 0.5714285714285714,
+      "mae_bpm": 0.6652160958517719,
+      "rmse_bpm": 0.7689854231554096,
+      "bias_bpm": 0.4986009187639233,
+      "ppg_rejection_reasons": {
+        "irregular_pulse_intervals": 3,
+        "low_periodicity": 1
+      },
+      "ecg_rejection_reasons": {},
+      "indices_rows": 220,
+      "source_sha256": "93948df3b6a97fd882f16241856f5db172a41af4e7e6d0d71fc9322b6ca7cda3"
+    },
+    "4": {
+      "total_windows": 8,
+      "ppg_accepted": 1,
+      "ppg_rejected": 7,
+      "ppg_coverage": 0.125,
+      "valid_ecg_windows": 8,
+      "invalid_ecg_windows": 0,
+      "paired_windows": 1,
+      "paired_coverage_all": 0.125,
+      "paired_coverage_valid_ecg": 0.125,
+      "mae_bpm": 0.7324580262320666,
+      "rmse_bpm": 0.7324580262320666,
+      "bias_bpm": -0.7324580262320666,
+      "ppg_rejection_reasons": {
+        "irregular_pulse_intervals": 7,
+        "low_periodicity": 6,
+        "diffuse_spectrum": 1
+      },
+      "ecg_rejection_reasons": {},
+      "indices_rows": 148,
+      "source_sha256": "61bfe31cfa7f80e976cd94136bd4592103aa66182bb33bb7e79c78c63223e242"
+    },
+    "5": {
+      "total_windows": 8,
+      "ppg_accepted": 0,
+      "ppg_rejected": 8,
+      "ppg_coverage": 0.0,
+      "valid_ecg_windows": 8,
+      "invalid_ecg_windows": 0,
+      "paired_windows": 0,
+      "paired_coverage_all": 0.0,
+      "paired_coverage_valid_ecg": 0.0,
+      "mae_bpm": null,
+      "rmse_bpm": null,
+      "bias_bpm": null,
+      "ppg_rejection_reasons": {
+        "irregular_pulse_intervals": 8,
+        "low_periodicity": 8,
+        "diffuse_spectrum": 3,
+        "peak_spectrum_disagreement": 3
+      },
+      "ecg_rejection_reasons": {},
+      "indices_rows": 99,
+      "source_sha256": "b7f54760cee64351f9f7f6f0aa1acda69ae3551db3b367e8f06b92b04a6ec62b"
+    }
+  },
+  "reference": "ECG-derived QRS energy, cross-checked against independent absolute-amplitude ECG peaks; no annotated ECG ground truth supplied"
+}

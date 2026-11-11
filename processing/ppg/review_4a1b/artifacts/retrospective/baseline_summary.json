@@ -1,0 +1,59 @@
+{
+  "Green": {
+    "windows": 31,
+    "accepted": 6,
+    "rejected": 25,
+    "coverage": 0.1935483870967742,
+    "paired": 6,
+    "invalid_ecg": 0,
+    "paired_coverage": 0.1935483870967742,
+    "mae_bpm": 0.6388286821640013,
+    "rmse_bpm": 0.7182317323769332,
+    "max_abs_error_bpm": 1.2036799298352463,
+    "accepted_errors_gt3_bpm": 0,
+    "reasons": {
+      "low_periodicity": 21,
+      "irregular_pulse_intervals": 21,
+      "diffuse_spectrum": 6,
+      "peak_spectrum_disagreement": 5
+    }
+  },
+  "Red": {
+    "windows": 31,
+    "accepted": 0,
+    "rejected": 31,
+    "coverage": 0.0,
+    "paired": 0,
+    "invalid_ecg": 0,
+    "paired_coverage": 0.0,
+    "mae_bpm": null,
+    "rmse_bpm": null,
+    "max_abs_error_bpm": null,
+    "accepted_errors_gt3_bpm": 0,
+    "reasons": {
+      "irregular_pulse_intervals": 31,
+      "low_periodicity": 31,
+      "diffuse_spectrum": 23,
+      "peak_spectrum_disagreement": 27
+    }
+  },
+  "IR": {
+    "windows": 31,
+    "accepted": 0,
+    "rejected": 31,
+    "coverage": 0.0,
+    "paired": 0,
+    "invalid_ecg": 0,
+    "paired_coverage": 0.0,
+    "mae_bpm": null,
+    "rmse_bpm": null,
+    "max_abs_error_bpm": null,
+    "accepted_errors_gt3_bpm": 0,
+    "reasons": {
+      "irregular_pulse_intervals": 31,
+      "low_periodicity": 31,
+      "diffuse_spectrum": 23,
+      "peak_spectrum_disagreement": 28
+    }
+  }
+}

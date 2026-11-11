@@ -1,0 +1,14 @@
+$kind: collection
+description: ""
+variables:
+  base_url: http://127.0.0.1:8000
+  email: ""
+  otp_code: ""
+  new_password: ""
+  attempt_id: ""
+  attempt_token: ""
+  reset_proof: ""
+scripts:
+  - type: http:beforeRequest
+    code: const origin = pm.variables.get("base_url"); if (!/^http:\/\/(127\.0\.0\.1|localhost|\[::1\])(:[0-9]+)?$/.test(origin)) { pm.execution.skipRequest(); throw new Error("Only local Laravel origins are allowed"); }
+    language: text/javascript

@@ -65,6 +65,8 @@ Both return an envelope like:
 }
 ```
 
+Successful `POST /api/auth/login/start` additionally returns `data.masked_phone_number`, for example `+20 •••••• 5678`, after credential validation only. It exposes the country calling code and final four national digits for the existing supported country picker codes; unrecognized calling codes safely fall back to the last four digits without guessing a prefix. No complete phone number or authenticated token is returned at this stage.
+
 Send/resend uses that attempt ID/secret only; client-supplied phone/user/email/purpose fields cannot redirect delivery. Response contains only attempt ID, otp_started=true, authenticated=false, UTC expires_at and resend_at. A resend invalidates the prior local challenge before contacting Wexora; a failed resend leaves no usable prior local challenge.
 
 Verification:

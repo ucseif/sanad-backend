@@ -1,6 +1,7 @@
 <?php
 
 use App\Application\Auth\AuthFlowException;
+use App\Application\Caregiving\LinkFailure;
 use App\Support\AuthApiResponse;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Foundation\Application;
@@ -20,6 +21,10 @@ return Application::configure(basePath: dirname(__DIR__))
         //
     })
     ->withExceptions(function (Exceptions $exceptions): void {
+        $exceptions->dontReport([LinkFailure::class]);
+        $exceptions->render(function (LinkFailure $exception, Request $request) {
+            return $request->is('api/*') ? AuthApiResponse::error($exception->machineCode, $exception->status, $exception->machineCode) : null;
+        });
         $exceptions->dontReport([AuthFlowException::class]);
         $exceptions->render(function (AuthFlowException $exception, Request $request) {
             if (! $request->is('api/*')) {

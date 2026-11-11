@@ -1,0 +1,847 @@
+{
+  "recordings": [
+    {
+      "session": 0,
+      "file": "0_preprocessed_03.csv",
+      "sha256": "4e00626a7fb1291b7ac62c65abf301d417237912784fd89c58719f0c510667ce",
+      "indices_sha256": "23ec14004d33bca5858bee44b661e81b430efdeeef0241dd011aa5cf6a7d7b38",
+      "rows": 24040,
+      "columns": [
+        "",
+        "Time",
+        "PPG_Wrist_G",
+        "PPG_Wrist_IR",
+        "PPG_Wrist_R",
+        "PPG_Finger_G_AC",
+        "PPG_Finger_IR_AC",
+        "PPG_Finger_R_AC",
+        "PPG_Wrist_G_AC",
+        "Pressure",
+        "ECG",
+        "BP_Sys",
+        "BP_Dia",
+        "SpO2"
+      ],
+      "start_s": 360.0133829388596,
+      "end_s": 599.9888085015576,
+      "duration_s": 239.97542556269804,
+      "effective_hz": 100.17275703807165,
+      "median_dt_s": 0.004472081629614877,
+      "min_dt_s": 5.454011784422619e-07,
+      "max_dt_s": 0.02047485948372696,
+      "dt_p01_s": 9.088723146533084e-05,
+      "dt_p99_s": 0.02004772528295007,
+      "non_increasing_time": 0,
+      "missing_nonfinite": {
+        "": 0,
+        "Time": 0,
+        "PPG_Wrist_G": 0,
+        "PPG_Wrist_IR": 0,
+        "PPG_Wrist_R": 0,
+        "PPG_Finger_G_AC": 0,
+        "PPG_Finger_IR_AC": 0,
+        "PPG_Finger_R_AC": 0,
+        "PPG_Wrist_G_AC": 0,
+        "Pressure": 0,
+        "ECG": 0,
+        "BP_Sys": 0,
+        "BP_Dia": 0,
+        "SpO2": 0
+      },
+      "ranges": {
+        "": [
+          0.0,
+          24039.0
+        ],
+        "Time": [
+          360.0133829388596,
+          599.9888085015576
+        ],
+        "PPG_Wrist_G": [
+          58309.508532170425,
+          266232.72058628383
+        ],
+        "PPG_Wrist_IR": [
+          16808.7405674479,
+          84561.55764125471
+        ],
+        "PPG_Wrist_R": [
+          21555.931219115588,
+          92878.80552521056
+        ],
+        "PPG_Finger_G_AC": [
+          -837.4206880065612,
+          4018.1407725221943
+        ],
+        "PPG_Finger_IR_AC": [
+          -8.867588441135013,
+          394.220575362051
+        ],
+        "PPG_Finger_R_AC": [
+          -35.13658984415815,
+          281.3115753852908
+        ],
+        "PPG_Wrist_G_AC": [
+          -29646.427352341358,
+          75936.7967925516
+        ],
+        "Pressure": [
+          -1.9855021339160763,
+          167.54067670442768
+        ],
+        "ECG": [
+          -0.6584755155018263,
+          1.1168639571978451
+        ],
+        "BP_Sys": [
+          101.0,
+          101.0
+        ],
+        "BP_Dia": [
+          61.0,
+          61.0
+        ],
+        "SpO2": [
+          98.87601745261684,
+          99.2130558397289
+        ]
+      },
+      "indices_rows": 186,
+      "index_bounds": {
+        "finger_s": [
+          876,
+          23892
+        ],
+        "finger_e": [
+          944,
+          23966
+        ],
+        "wrist_s": [
+          894,
+          23891
+        ],
+        "wrist_e": [
+          940,
+          23965
+        ]
+      },
+      "indices_in_bounds": true,
+      "indices_ordered": true,
+      "wrist_classes": {
+        "1L": 6,
+        "3": 28,
+        "2E": 98,
+        "2L": 10,
+        "1": 44
+      },
+      "finger_classes": {
+        "2L": 157,
+        "3": 9,
+        "2E": 18,
+        "1L": 2
+      }
+    },
+    {
+      "session": 1,
+      "file": "1_preprocessed_03.csv",
+      "sha256": "3b9e1fe5cb275c7d5196e9aa9b489769a7adc88c5fffa256862300e7a75bcbfa",
+      "indices_sha256": "3ffffc1a5ec2ba453f2a227aa18dc60969bbd05ef1ff2f544ee25bdc32c44d60",
+      "rows": 24041,
+      "columns": [
+        "",
+        "Time",
+        "PPG_Wrist_G",
+        "PPG_Wrist_IR",
+        "PPG_Wrist_R",
+        "PPG_Finger_G_AC",
+        "PPG_Finger_IR_AC",
+        "PPG_Finger_R_AC",
+        "PPG_Wrist_G_AC",
+        "Pressure",
+        "ECG",
+        "BP_Sys",
+        "BP_Dia",
+        "SpO2"
+      ],
+      "start_s": 1500.0061218272133,
+      "end_s": 1739.9930051671802,
+      "duration_s": 239.98688333996688,
+      "effective_hz": 100.17214134967864,
+      "median_dt_s": 0.009956627432075038,
+      "min_dt_s": 0.006259415819840797,
+      "max_dt_s": 0.01366318610507733,
+      "dt_p01_s": 0.00650101697374339,
+      "dt_p99_s": 0.013346489226478297,
+      "non_increasing_time": 0,
+      "missing_nonfinite": {
+        "": 0,
+        "Time": 0,
+        "PPG_Wrist_G": 0,
+        "PPG_Wrist_IR": 0,
+        "PPG_Wrist_R": 0,
+        "PPG_Finger_G_AC": 0,
+        "PPG_Finger_IR_AC": 0,
+        "PPG_Finger_R_AC": 0,
+        "PPG_Wrist_G_AC": 0,
+        "Pressure": 0,
+        "ECG": 0,
+        "BP_Sys": 0,
+        "BP_Dia": 0,
+        "SpO2": 0
+      },
+      "ranges": {
+        "": [
+          0.0,
+          24040.0
+        ],
+        "Time": [
+          1500.0061218272133,
+          1739.9930051671802
+        ],
+        "PPG_Wrist_G": [
+          165982.82391821928,
+          190955.70422261613
+        ],
+        "PPG_Wrist_IR": [
+          76892.44787903568,
+          78603.63599417472
+        ],
+        "PPG_Wrist_R": [
+          76974.99147104661,
+          79568.48026402832
+        ],
+        "PPG_Finger_G_AC": [
+          -875.6898948666058,
+          3199.8987954669865
+        ],
+        "PPG_Finger_IR_AC": [
+          -42.56233211349172,
+          233.94750664246385
+        ],
+        "PPG_Finger_R_AC": [
+          -43.14342512714211,
+          146.36237537929264
+        ],
+        "PPG_Wrist_G_AC": [
+          -774.0765275972954,
+          3328.1743549125677
+        ],
+        "Pressure": [
+          39.563284854804834,
+          68.14401384422813
+        ],
+        "ECG": [
+          -0.6696119092139368,
+          1.1891118313819986
+        ],
+        "BP_Sys": [
+          104.0,
+          104.0
+        ],
+        "BP_Dia": [
+          68.0,
+          68.0
+        ],
+        "SpO2": [
+          95.99113885849204,
+          99.2719253763406
+        ]
+      },
+      "indices_rows": 129,
+      "index_bounds": {
+        "finger_s": [
+          24,
+          23905
+        ],
+        "finger_e": [
+          99,
+          23981
+        ],
+        "wrist_s": [
+          22,
+          23905
+        ],
+        "wrist_e": [
+          98,
+          23981
+        ]
+      },
+      "indices_in_bounds": true,
+      "indices_ordered": true,
+      "wrist_classes": {
+        "2E": 33,
+        "1": 36,
+        "3": 58,
+        "1L": 2
+      },
+      "finger_classes": {
+        "2E": 54,
+        "2L": 55,
+        "3": 20
+      }
+    },
+    {
+      "session": 2,
+      "file": "2_preprocessed_03.csv",
+      "sha256": "c4d00743de2536afe0a7bf80a4538d607d39a0e05ea9e072b2e651ff47f33807",
+      "indices_sha256": "c977c7805c3c88e6596ea6d3e978048e46c891dfff82817eea3e0f7fc92fb6d2",
+      "rows": 24041,
+      "columns": [
+        "",
+        "Time",
+        "PPG_Wrist_G",
+        "PPG_Wrist_IR",
+        "PPG_Wrist_R",
+        "PPG_Finger_G_AC",
+        "PPG_Finger_IR_AC",
+        "PPG_Finger_R_AC",
+        "PPG_Wrist_G_AC",
+        "Pressure",
+        "ECG",
+        "BP_Sys",
+        "BP_Dia",
+        "SpO2"
+      ],
+      "start_s": 1770.001322245231,
+      "end_s": 2009.987841280049,
+      "duration_s": 239.986519034818,
+      "effective_hz": 100.17229341333211,
+      "median_dt_s": 0.009949487536914603,
+      "min_dt_s": 0.0062511694363820425,
+      "max_dt_s": 0.013714122277633578,
+      "dt_p01_s": 0.006494404856539404,
+      "dt_p99_s": 0.013373330433978481,
+      "non_increasing_time": 0,
+      "missing_nonfinite": {
+        "": 0,
+        "Time": 0,
+        "PPG_Wrist_G": 0,
+        "PPG_Wrist_IR": 0,
+        "PPG_Wrist_R": 0,
+        "PPG_Finger_G_AC": 0,
+        "PPG_Finger_IR_AC": 0,
+        "PPG_Finger_R_AC": 0,
+        "PPG_Wrist_G_AC": 0,
+        "Pressure": 0,
+        "ECG": 0,
+        "BP_Sys": 0,
+        "BP_Dia": 0,
+        "SpO2": 0
+      },
+      "ranges": {
+        "": [
+          0.0,
+          24040.0
+        ],
+        "Time": [
+          1770.001322245231,
+          2009.987841280049
+        ],
+        "PPG_Wrist_G": [
+          177528.795770502,
+          204183.85748883823
+        ],
+        "PPG_Wrist_IR": [
+          78194.14950153789,
+          79773.91780733135
+        ],
+        "PPG_Wrist_R": [
+          79596.578074515,
+          81957.00536290373
+        ],
+        "PPG_Finger_G_AC": [
+          -2135.7793123839074,
+          2877.9145699954242
+        ],
+        "PPG_Finger_IR_AC": [
+          -329.4701319033775,
+          357.59735068712325
+        ],
+        "PPG_Finger_R_AC": [
+          -36.63594373970409,
+          197.37754442456935
+        ],
+        "PPG_Wrist_G_AC": [
+          -1452.9142932989052,
+          4553.113524888031
+        ],
+        "Pressure": [
+          43.93813490726572,
+          93.00007778129488
+        ],
+        "ECG": [
+          -0.7144981384237067,
+          1.1917299208725831
+        ],
+        "BP_Sys": [
+          91.0,
+          91.0
+        ],
+        "BP_Dia": [
+          64.0,
+          64.0
+        ],
+        "SpO2": [
+          96.80497819879176,
+          99.18585012372984
+        ]
+      },
+      "indices_rows": 169,
+      "index_bounds": {
+        "finger_s": [
+          181,
+          22954
+        ],
+        "finger_e": [
+          250,
+          23033
+        ],
+        "wrist_s": [
+          181,
+          22957
+        ],
+        "wrist_e": [
+          251,
+          23012
+        ]
+      },
+      "indices_in_bounds": true,
+      "indices_ordered": true,
+      "wrist_classes": {
+        "1": 32,
+        "2E": 46,
+        "3": 82,
+        "2L": 5,
+        "1L": 4
+      },
+      "finger_classes": {
+        "2L": 103,
+        "3": 27,
+        "2E": 13,
+        "1L": 26
+      }
+    },
+    {
+      "session": 3,
+      "file": "3_preprocessed_03.csv",
+      "sha256": "93948df3b6a97fd882f16241856f5db172a41af4e7e6d0d71fc9322b6ca7cda3",
+      "indices_sha256": "52ad9f372b9555447ff22fea9c695ebf1f88e9db25b55f563f83abbdf776fe7f",
+      "rows": 21037,
+      "columns": [
+        "",
+        "Time",
+        "PPG_Wrist_G",
+        "PPG_Wrist_IR",
+        "PPG_Wrist_R",
+        "PPG_Finger_G_AC",
+        "PPG_Finger_IR_AC",
+        "PPG_Finger_R_AC",
+        "PPG_Wrist_G_AC",
+        "Pressure",
+        "ECG",
+        "BP_Sys",
+        "BP_Dia",
+        "SpO2"
+      ],
+      "start_s": 2180.003466068313,
+      "end_s": 2389.998277216659,
+      "duration_s": 209.9948111483459,
+      "effective_hz": 100.17390375012464,
+      "median_dt_s": 0.00994369638237913,
+      "min_dt_s": 0.005708625313218363,
+      "max_dt_s": 0.014192640812780155,
+      "dt_p01_s": 0.005987024514070072,
+      "dt_p99_s": 0.013911960687437386,
+      "non_increasing_time": 0,
+      "missing_nonfinite": {
+        "": 0,
+        "Time": 0,
+        "PPG_Wrist_G": 0,
+        "PPG_Wrist_IR": 0,
+        "PPG_Wrist_R": 0,
+        "PPG_Finger_G_AC": 0,
+        "PPG_Finger_IR_AC": 0,
+        "PPG_Finger_R_AC": 0,
+        "PPG_Wrist_G_AC": 0,
+        "Pressure": 0,
+        "ECG": 0,
+        "BP_Sys": 0,
+        "BP_Dia": 0,
+        "SpO2": 0
+      },
+      "ranges": {
+        "": [
+          0.0,
+          21036.0
+        ],
+        "Time": [
+          2180.003466068313,
+          2389.998277216659
+        ],
+        "PPG_Wrist_G": [
+          157651.8632838905,
+          182632.97149035707
+        ],
+        "PPG_Wrist_IR": [
+          76393.91422657674,
+          78344.5689537017
+        ],
+        "PPG_Wrist_R": [
+          77185.51845839978,
+          79438.33820472652
+        ],
+        "PPG_Finger_G_AC": [
+          -394.5489025953575,
+          1862.3375360467471
+        ],
+        "PPG_Finger_IR_AC": [
+          -41.50799517951964,
+          297.8196940069902
+        ],
+        "PPG_Finger_R_AC": [
+          -25.259476129693212,
+          191.6823905404308
+        ],
+        "PPG_Wrist_G_AC": [
+          -1403.0714590186544,
+          958.2743474135932
+        ],
+        "Pressure": [
+          67.14846902844653,
+          119.32315302721553
+        ],
+        "ECG": [
+          -0.6871610475683022,
+          1.19978260593247
+        ],
+        "BP_Sys": [
+          100.0,
+          100.0
+        ],
+        "BP_Dia": [
+          69.0,
+          69.0
+        ],
+        "SpO2": [
+          96.56945818304976,
+          99.23611980690642
+        ]
+      },
+      "indices_rows": 220,
+      "index_bounds": {
+        "finger_s": [
+          80,
+          20605
+        ],
+        "finger_e": [
+          151,
+          20677
+        ],
+        "wrist_s": [
+          83,
+          20609
+        ],
+        "wrist_e": [
+          154,
+          20679
+        ]
+      },
+      "indices_in_bounds": true,
+      "indices_ordered": true,
+      "wrist_classes": {
+        "2E": 60,
+        "1": 41,
+        "3": 112,
+        "1L": 1,
+        "2L": 6
+      },
+      "finger_classes": {
+        "2L": 147,
+        "3": 45,
+        "1L": 28
+      }
+    },
+    {
+      "session": 4,
+      "file": "4_preprocessed_03.csv",
+      "sha256": "61bfe31cfa7f80e976cd94136bd4592103aa66182bb33bb7e79c78c63223e242",
+      "indices_sha256": "9df002994a9e58926fd10f51500efe57ed6496821149747051bc96a2bb7339eb",
+      "rows": 24040,
+      "columns": [
+        "",
+        "Time",
+        "PPG_Wrist_G",
+        "PPG_Wrist_IR",
+        "PPG_Wrist_R",
+        "PPG_Finger_G_AC",
+        "PPG_Finger_IR_AC",
+        "PPG_Finger_R_AC",
+        "PPG_Wrist_G_AC",
+        "Pressure",
+        "ECG",
+        "BP_Sys",
+        "BP_Dia",
+        "SpO2"
+      ],
+      "start_s": 2420.0077934374085,
+      "end_s": 2659.990012415985,
+      "duration_s": 239.98221897857638,
+      "effective_hz": 100.16992134798954,
+      "median_dt_s": 0.007138184548239224,
+      "min_dt_s": 0.004697909570950287,
+      "max_dt_s": 0.015284349216472037,
+      "dt_p01_s": 0.004959939272339398,
+      "dt_p99_s": 0.014939146589767915,
+      "non_increasing_time": 0,
+      "missing_nonfinite": {
+        "": 0,
+        "Time": 0,
+        "PPG_Wrist_G": 0,
+        "PPG_Wrist_IR": 0,
+        "PPG_Wrist_R": 0,
+        "PPG_Finger_G_AC": 0,
+        "PPG_Finger_IR_AC": 0,
+        "PPG_Finger_R_AC": 0,
+        "PPG_Wrist_G_AC": 0,
+        "Pressure": 0,
+        "ECG": 0,
+        "BP_Sys": 0,
+        "BP_Dia": 0,
+        "SpO2": 0
+      },
+      "ranges": {
+        "": [
+          0.0,
+          24039.0
+        ],
+        "Time": [
+          2420.0077934374085,
+          2659.990012415985
+        ],
+        "PPG_Wrist_G": [
+          156286.93521275354,
+          180046.91881118598
+        ],
+        "PPG_Wrist_IR": [
+          78088.91557487714,
+          79380.80459485379
+        ],
+        "PPG_Wrist_R": [
+          78050.97970274149,
+          79726.25710356871
+        ],
+        "PPG_Finger_G_AC": [
+          -57.908797550888266,
+          5411.169697774807
+        ],
+        "PPG_Finger_IR_AC": [
+          -62.36117468039447,
+          619.347744035811
+        ],
+        "PPG_Finger_R_AC": [
+          -34.550270451101824,
+          395.7730734090728
+        ],
+        "PPG_Wrist_G_AC": [
+          -1666.7241812629509,
+          2854.3219509224
+        ],
+        "Pressure": [
+          28.32938826034328,
+          102.7322016687844
+        ],
+        "ECG": [
+          -0.7073221454590704,
+          1.2102836393001477
+        ],
+        "BP_Sys": [
+          98.0,
+          98.0
+        ],
+        "BP_Dia": [
+          68.0,
+          68.0
+        ],
+        "SpO2": [
+          98.98741885394064,
+          99.01276043713015
+        ]
+      },
+      "indices_rows": 148,
+      "index_bounds": {
+        "finger_s": [
+          1006,
+          23833
+        ],
+        "finger_e": [
+          1070,
+          23912
+        ],
+        "wrist_s": [
+          1009,
+          23836
+        ],
+        "wrist_e": [
+          1075,
+          23916
+        ]
+      },
+      "indices_in_bounds": true,
+      "indices_ordered": true,
+      "wrist_classes": {
+        "3": 72,
+        "1": 45,
+        "2E": 23,
+        "2L": 5,
+        "1L": 3
+      },
+      "finger_classes": {
+        "3": 10,
+        "1L": 31,
+        "2L": 107
+      }
+    },
+    {
+      "session": 5,
+      "file": "5_preprocessed_03.csv",
+      "sha256": "b7f54760cee64351f9f7f6f0aa1acda69ae3551db3b367e8f06b92b04a6ec62b",
+      "indices_sha256": "dcc49cd54b6578a2a168917fcf0ca2621ce99733577ee0fb9d217b6dd0fbc81e",
+      "rows": 24040,
+      "columns": [
+        "",
+        "Time",
+        "PPG_Wrist_G",
+        "PPG_Wrist_IR",
+        "PPG_Wrist_R",
+        "PPG_Finger_G_AC",
+        "PPG_Finger_IR_AC",
+        "PPG_Finger_R_AC",
+        "PPG_Wrist_G_AC",
+        "Pressure",
+        "ECG",
+        "BP_Sys",
+        "BP_Dia",
+        "SpO2"
+      ],
+      "start_s": 2690.0135195786206,
+      "end_s": 2929.9958334582043,
+      "duration_s": 239.98231387958367,
+      "effective_hz": 100.16988173579362,
+      "median_dt_s": 0.0058220528048877895,
+      "min_dt_s": 0.0017899518284139049,
+      "max_dt_s": 0.018059568043099716,
+      "dt_p01_s": 0.002323560850072681,
+      "dt_p99_s": 0.017621832419536076,
+      "non_increasing_time": 0,
+      "missing_nonfinite": {
+        "": 0,
+        "Time": 0,
+        "PPG_Wrist_G": 0,
+        "PPG_Wrist_IR": 0,
+        "PPG_Wrist_R": 0,
+        "PPG_Finger_G_AC": 0,
+        "PPG_Finger_IR_AC": 0,
+        "PPG_Finger_R_AC": 0,
+        "PPG_Wrist_G_AC": 0,
+        "Pressure": 0,
+        "ECG": 0,
+        "BP_Sys": 0,
+        "BP_Dia": 0,
+        "SpO2": 0
+      },
+      "ranges": {
+        "": [
+          0.0,
+          24039.0
+        ],
+        "Time": [
+          2690.0135195786206,
+          2929.9958334582043
+        ],
+        "PPG_Wrist_G": [
+          156723.6742316506,
+          206673.5300886607
+        ],
+        "PPG_Wrist_IR": [
+          75378.93475845181,
+          79321.98547639753
+        ],
+        "PPG_Wrist_R": [
+          78031.58882463105,
+          84127.40752648299
+        ],
+        "PPG_Finger_G_AC": [
+          -40.717770412156824,
+          3857.966231672035
+        ],
+        "PPG_Finger_IR_AC": [
+          -22.16362888761796,
+          510.8462139415933
+        ],
+        "PPG_Finger_R_AC": [
+          -24.759800437706872,
+          329.48691838869127
+        ],
+        "PPG_Wrist_G_AC": [
+          -9171.26332241096,
+          24330.46405620582
+        ],
+        "Pressure": [
+          32.041569856188104,
+          179.40594723475985
+        ],
+        "ECG": [
+          -0.6855731343458978,
+          1.1396577153874945
+        ],
+        "BP_Sys": [
+          110.0,
+          110.0
+        ],
+        "BP_Dia": [
+          72.0,
+          72.0
+        ],
+        "SpO2": [
+          98.99256976062796,
+          99.00739592313566
+        ]
+      },
+      "indices_rows": 99,
+      "index_bounds": {
+        "finger_s": [
+          101,
+          21846
+        ],
+        "finger_e": [
+          177,
+          21923
+        ],
+        "wrist_s": [
+          104,
+          21847
+        ],
+        "wrist_e": [
+          176,
+          21953
+        ]
+      },
+      "indices_in_bounds": true,
+      "indices_ordered": true,
+      "wrist_classes": {
+        "3": 49,
+        "1": 33,
+        "2L": 4,
+        "2E": 12,
+        "1L": 1
+      },
+      "finger_classes": {
+        "1L": 22,
+        "2L": 31,
+        "2E": 26,
+        "3": 20
+      }
+    }
+  ],
+  "file_count": 12
+}

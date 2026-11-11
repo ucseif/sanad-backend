@@ -1,0 +1,34 @@
+{
+  "selected_candidate": null,
+  "revised_processor_release": false,
+  "reason": "Development-only predeclared reliability screen; no retrospective data used to choose",
+  "fractions": [
+    0.55,
+    0.65,
+    0.75
+  ],
+  "baseline_config": {
+    "fs": 100.0,
+    "window_s": 30.0,
+    "edge_s": 2.0,
+    "min_bpm": 40.0,
+    "max_bpm": 180.0,
+    "max_rr_cv": 0.2,
+    "min_autocorrelation": 0.4,
+    "min_spectral_concentration": 0.45,
+    "max_spectral_difference_bpm": 12.0
+  },
+  "code_sha256": {
+    "analysis.py": "2fc087dd09a91a5f03ebe81b85adce9d24823d9ddb10558e13aaf17dd4d207a0",
+    "candidates.py": "3aec6d13368be58ffb7f4dd88704d310152e657467d810dfc0ab4182f9cf7054",
+    "development_experiments.py": "c48e0d6712e8a882cb759837ba20d215a48a63f93d9b45a48954b0ecb34c05ed"
+  },
+  "baseline_preservation_file": "preservation.json",
+  "retrospective_sessions": [
+    2,
+    3,
+    4,
+    5
+  ],
+  "retrospective_is_not_untouched_holdout": true
+}

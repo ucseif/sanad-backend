@@ -1,0 +1,36 @@
+$kind: http-request
+url: "{{base_url}}/api/auth/register/prepare"
+method: POST
+headers:
+  Accept: application/json
+  Content-Type: application/json
+body:
+  type: json
+  content: "{\r
+
+    \    \"country\":  \"Egypt\",\r
+
+    \    \"password_confirmation\":  \"{{password}}\",\r
+
+    \    \"region\":  \"Cairo\",\r
+
+    \    \"username\":  \"{{username}}\",\r
+
+    \    \"password\":  \"{{password}}\",\r
+
+    \    \"role\":  \"{{role}}\",\r
+
+    \    \"first_name\":  \"Amina\",\r
+
+    \    \"address\":  \"12 Nile Street\",\r
+
+    \    \"language\":  \"en\",\r
+
+    \    \"phone_number\":  \"{{phone_number}}\",\r
+
+    \    \"last_name\":  \"Hassan\",\r
+
+    \    \"email\":  \"{{email}}\"\r
+
+    }"
+order: 4000

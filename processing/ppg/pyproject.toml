@@ -1,0 +1,21 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "sanad-ppg"
+version = "0.1.1"
+description = "Offline deterministic PPG processing shared by future SANAD ingestion and AI pipelines"
+requires-python = ">=3.11"
+dependencies = ["numpy>=2.0,<3", "scipy>=1.14,<2"]
+
+[project.optional-dependencies]
+test = ["pytest>=8,<10", "jsonschema>=4.18,<5"]
+evaluation = ["matplotlib>=3.9,<4"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]

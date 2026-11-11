@@ -52,7 +52,7 @@ class OtpConcurrencyTest extends TestCase
                 }
                 $user->save();
                 $start = $purpose === 'password-reset'
-                    ? $this->postJson('/api/auth/password/forgot', ['email' => $registration['email']])->assertStatus(202)
+                    ? $this->postJson('/api/auth/password/forgot', ['email' => $registration['email'], 'phone_number' => $registration['phone_number']])->assertStatus(202)
                     : $this->postJson('/api/auth/login/start', ['email' => $registration['email'], 'password' => $registration['password']])->assertCreated();
             } else {
                 $start = $this->postJson('/api/auth/signup/start', $registration)->assertCreated();
