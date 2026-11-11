@@ -20,6 +20,7 @@ class CaregiverLinkResource extends JsonResource
         };
 
         return ['id' => $this->id, 'status' => $this->status->value,
+            ...($actor->id === $this->caregiver_id ? ['patient_id' => (string) $this->patient_id] : []),
             'counterpart' => ['name' => $counterpart->name, 'username' => $counterpart->username],
             'invited_at' => $this->invited_at->toIso8601String(),
             'accepted_at' => $this->accepted_at?->toIso8601String(), 'ended_at' => $this->ended_at?->toIso8601String(),

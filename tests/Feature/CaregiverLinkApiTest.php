@@ -110,9 +110,45 @@ class CaregiverLinkApiTest extends TestCase
             $this->asUser($p);
             $id = $this->postJson('/api/caregiver-links', ['caregiver_username' => 'Caregiver1'])->assertCreated()->json('data.link.id');
             $this->asUser($this->caregiver);
-            $this->postJson("/api/caregiver-links/$id/accept")->assertOk();
+            $this->postJson("/api/caregiver-links/$id/accept")->assertOk()
+                ->assertJsonPath('data.link.patient_id', (string) $p->id);
         }
         $this->getJson('/api/caregiver-links?per_page=2&page=2')->assertOk()->assertJsonCount(2, 'data.links')->assertJsonPath('data.pagination.total', 4);
+    }
+
+    public function test_patient_id_is_exposed_only_to_the_related_caregiver_without_changing_access(): void
+    {
+        $this->asUser($this->patient);
+        $created = $this->postJson('/api/caregiver-links', ['caregiver_username' => 'Caregiver1'])->assertCreated();
+        $id = $created->json('data.link.id');
+        $this->assertArrayNotHasKey('patient_id', $created->json('data.link'));
+
+        $this->asUser($this->caregiver);
+        $pending = $this->getJson('/api/caregiver-links')->assertOk()
+            ->assertJsonPath('data.links.0.patient_id', (string) $this->patient->id)
+            ->assertJsonPath('data.links.0.id', $id)
+            ->assertJsonPath('data.links.0.status', 'pending')
+            ->assertJsonPath('data.links.0.allowed_actions', ['accept', 'decline']);
+        $this->assertSame(['name' => 'Patient1 Display', 'username' => 'Patient1'], $pending->json('data.links.0.counterpart'));
+        $this->assertFalse(Gate::forUser($this->caregiver)->allows('view-linked-patient', $this->patient));
+        $this->postJson("/api/caregiver-links/$id/accept")->assertOk()
+            ->assertJsonPath('data.link.patient_id', (string) $this->patient->id)
+            ->assertJsonPath('data.link.status', 'active');
+        $this->assertTrue(Gate::forUser($this->caregiver)->allows('view-linked-patient', $this->patient));
+
+        $this->asUser($this->patient);
+        $ownList = $this->getJson('/api/caregiver-links')->assertOk();
+        $this->assertArrayNotHasKey('patient_id', $ownList->json('data.links.0'));
+        $this->postJson("/api/caregiver-links/$id/revoke")->assertOk();
+        $this->asUser($this->caregiver);
+        $this->getJson('/api/caregiver-links?status=all')->assertOk()
+            ->assertJsonPath('data.links.0.patient_id', (string) $this->patient->id)
+            ->assertJsonPath('data.links.0.status', 'revoked');
+        $this->assertFalse(Gate::forUser($this->caregiver)->allows('view-linked-patient', $this->patient));
+
+        $this->asUser(CaregiverLinkTables::user('OtherCarer', UserRole::Caregiver));
+        $this->getJson('/api/caregiver-links?status=all')->assertOk()->assertJsonCount(0, 'data.links');
+        $this->postJson("/api/caregiver-links/$id/accept")->assertNotFound();
     }
 
     public function test_unrelated_resources_and_wrong_actions_are_denied(): void
